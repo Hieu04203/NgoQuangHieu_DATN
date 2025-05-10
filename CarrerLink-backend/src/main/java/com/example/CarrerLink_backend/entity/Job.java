@@ -1,0 +1,48 @@
+package com.example.CarrerLink_backend.entity;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Entity
+@Table(name = "Jobs")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Job {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int jobId;
+
+    private String requirements;
+    private String jobTitle;
+    private String jobType;
+    private String description;
+
+    private int rate;
+    private String location;
+    @Enumerated(EnumType.STRING)
+    private JobStatus status = JobStatus.ACTIVE;
+
+
+
+    @ManyToMany
+    @JoinTable(name = "Job_technologies",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "Tech_id"))
+    private List<Technology> technologies;
+
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @OneToMany(mappedBy = "job")
+    private List<StudentJobs> studentJobs;
+
+
+}
