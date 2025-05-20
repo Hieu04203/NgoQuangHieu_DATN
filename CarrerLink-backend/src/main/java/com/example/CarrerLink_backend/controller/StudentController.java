@@ -89,8 +89,6 @@ public class StudentController {
     }
 
 
-
-
     @Operation(summary = "Xóa ứng viên")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Ứng viên đã được xóa thành công"),
