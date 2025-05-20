@@ -27,5 +27,4 @@ public class AcedemicCourseController {
 
         return ResponseEntity.ok(new StandardResponse(true, "Filtered courses fetched successfully", acedemicCourses));
     }
-
 }
