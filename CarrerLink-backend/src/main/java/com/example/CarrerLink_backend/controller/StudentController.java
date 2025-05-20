@@ -88,7 +88,6 @@ public class StudentController {
         return ResponseEntity.ok(new StandardResponse(true, "Ứng viên đã cập nhật thành công", message));
     }
 
-
     @Operation(summary = "Xóa ứng viên")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Ứng viên đã được xóa thành công"),
