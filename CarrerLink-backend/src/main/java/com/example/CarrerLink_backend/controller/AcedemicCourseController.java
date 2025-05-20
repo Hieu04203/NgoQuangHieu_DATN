@@ -24,7 +24,6 @@ public class AcedemicCourseController {
             @RequestParam(required = false) String skillLevel) {
 
         List<RequireCoursesDTO> acedemicCourses =  adminService.getAllCourses(requiredSkill, skillLevel);
-
         return ResponseEntity.ok(new StandardResponse(true, "Filtered courses fetched successfully", acedemicCourses));
     }
 }
