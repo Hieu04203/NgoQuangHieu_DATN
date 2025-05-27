@@ -1,5 +1,6 @@
 package com.example.CarrerLink_backend.service;
 
+import com.example.CarrerLink_backend.dto.JobDetailsDTO;
 import com.example.CarrerLink_backend.dto.response.ApplicantDetailsgetResponseDTO;
 import com.example.CarrerLink_backend.dto.response.JobgetResponseDTO;
 import com.example.CarrerLink_backend.dto.response.StudentgetResponseDTO;
@@ -22,4 +23,5 @@ public interface JobService {
     List<JobgetResponseDTO> getAllJobByCompany(int companyId);
 
     String closeJob(int jobId);
+
 }

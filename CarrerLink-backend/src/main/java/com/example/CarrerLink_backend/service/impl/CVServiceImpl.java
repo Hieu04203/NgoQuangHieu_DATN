@@ -125,10 +125,20 @@ public class CVServiceImpl implements CVService {
             certifications.add(certification);
         }
         existingCV.setCertifications(certifications);
-        broadcastService.broadcastCounts();// Replace the entire list   cvRepo.save(existingCV);
+        cvRepo.save(existingCV);
         return "CV updated successfully";
 
     }
+
+//    @Override
+//    public CVgetResponseDTO getCV(int studentId) {
+//        Student student = studentRepo.findById(studentId)
+//                .orElseThrow(() -> new ResourceNotFoundException("CV for student with ID " + studentId + " not found."));
+//
+//        CV cv = student.getCv();
+//        return modelMapper.map(cv, CVgetResponseDTO.class);
+//
+//    }
 
     @Override
     public CVgetResponseDTO getCV(int studentId) {
@@ -136,9 +146,86 @@ public class CVServiceImpl implements CVService {
                 .orElseThrow(() -> new ResourceNotFoundException("CV for student with ID " + studentId + " not found."));
 
         CV cv = student.getCv();
-        return modelMapper.map(cv, CVgetResponseDTO.class);
+        if (cv == null) {
+            throw new ResourceNotFoundException("No CV found for student ID: " + studentId);
+        }
 
+        CVgetResponseDTO responseDTO = new CVgetResponseDTO();
+        responseDTO.setName(cv.getName());
+        responseDTO.setTitle(cv.getTitle());
+        responseDTO.setMobile(cv.getMobile());
+        responseDTO.setAddress(cv.getAddress());
+        responseDTO.setEmail(cv.getEmail());
+        responseDTO.setGithubLink(cv.getGithubLink());
+        responseDTO.setLinkedinLink(cv.getLinkedinLink());
+
+        responseDTO.setSummary(cv.getSummary());
+        responseDTO.setExperience(cv.getExperience());
+        responseDTO.setAdditionalInfo(cv.getAdditionalInfo());
+
+        responseDTO.setBio(cv.getBio());
+        responseDTO.setReferee(cv.getReferee());
+        responseDTO.setRefereeEmail(cv.getRefereeEmail());
+
+        // Skills
+        List<TechnicalSkillDTO> skillDTOs = cv.getSkills().stream().map(skill -> {
+            TechnicalSkillDTO dto = new TechnicalSkillDTO();
+            dto.setTechSkill(skill.getTechSkill());
+            dto.setCategory(skill.getCategory());
+            return dto;
+        }).collect(Collectors.toList());
+        responseDTO.setSkills(skillDTOs);
+
+        // Projects
+        List<ProjectsDTO> projectDTOs = cv.getProjects().stream().map(project -> {
+            ProjectsDTO dto = new ProjectsDTO();
+            dto.setProjectName(project.getProjectName());
+            dto.setProjectDescription(project.getProjectDescription());
+            dto.setGithubLink(project.getGithubLink());
+            return dto;
+        }).collect(Collectors.toList());
+        responseDTO.setProjects(projectDTOs);
+
+        // Experiences
+        List<ExperienceDTO> experienceDTOs = cv.getExperiences().stream().map(exp -> {
+            ExperienceDTO dto = new ExperienceDTO();
+            dto.setJobTitle(exp.getJobTitle());
+            dto.setCompanyName(exp.getCompanyName());
+            dto.setStartDate(exp.getStartDate());
+            dto.setEndDate(exp.getEndDate());
+            dto.setDescription(exp.getDescription());
+            return dto;
+        }).collect(Collectors.toList());
+        responseDTO.setExperiences(experienceDTOs);
+
+        // Educations
+        List<EducationDTO> educationDTOs = cv.getEducations().stream().map(edu -> {
+            EducationDTO dto = new EducationDTO();
+            dto.setDegree(edu.getDegree());
+            dto.setInstitution(edu.getInstitution());
+            dto.setLocation(edu.getLocation());
+            dto.setStartDate(edu.getStartDate());
+            dto.setEndDate(edu.getEndDate());
+            dto.setGpa(edu.getGpa());
+            dto.setDescription(edu.getDescription());
+            return dto;
+        }).collect(Collectors.toList());
+        responseDTO.setEducations(educationDTOs);
+
+        // Certifications
+        List<CertificationDTO> certDTOs = cv.getCertifications().stream().map(cert -> {
+            CertificationDTO dto = new CertificationDTO();
+            dto.setName(cert.getName());
+            dto.setOrganization(cert.getOrganization());
+            dto.setIssueDate(cert.getIssueDate());
+            dto.setCertificationLink(cert.getCertificationLink());
+            return dto;
+        }).collect(Collectors.toList());
+        responseDTO.setCertifications(certDTOs);
+
+        return responseDTO;
     }
+
 
     public void updateSkillSet(CV cv,int studentId){
 

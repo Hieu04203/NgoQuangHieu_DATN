@@ -2,6 +2,7 @@ package com.example.CarrerLink_backend.controller;
 
 
 import com.example.CarrerLink_backend.dto.CourseRecommendationDTO;
+import com.example.CarrerLink_backend.dto.JobDetailsDTO;
 import com.example.CarrerLink_backend.dto.JobRecommendationDTO;
 import com.example.CarrerLink_backend.dto.ProjectIdeaDTO;
 import com.example.CarrerLink_backend.dto.request.ApplyJobRequestDTO;
@@ -13,6 +14,7 @@ import com.example.CarrerLink_backend.entity.Student;
 import com.example.CarrerLink_backend.entity.UserEntity;
 import com.example.CarrerLink_backend.repo.StudentRepo;
 import com.example.CarrerLink_backend.service.CourseRecommendationService;
+import com.example.CarrerLink_backend.service.JobService;
 import com.example.CarrerLink_backend.service.ProjectRecommendationService;
 import com.example.CarrerLink_backend.service.StudentService;
 import com.example.CarrerLink_backend.service.impl.CountBroadcastService;
@@ -47,6 +49,7 @@ public class StudentController {
     private final JobRecommendationServiceImpl recommendationService;
     private final ProjectRecommendationService projectRecommendationService;
     private final CountBroadcastService countBroadcastService;
+    private final JobService jobService;
     @Operation(summary = "Lưu ứng viên")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Ứng viên đã tạo thành công"),
@@ -111,8 +114,6 @@ public class StudentController {
         String message = studentService.applyJob(applyJobRequestDTO);
         return ResponseEntity.ok(new StandardResponse(true, "Việc làm đã được ứng tuyển thành công", message));
     }
-
-
 
 
     @Operation(summary = "Get all jobs applied by a student")

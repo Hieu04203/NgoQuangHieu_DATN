@@ -2,6 +2,7 @@ package com.example.CarrerLink_backend.service.impl;
 
 
 
+import com.example.CarrerLink_backend.dto.JobDetailsDTO;
 import com.example.CarrerLink_backend.dto.TechnologyDTO;
 import com.example.CarrerLink_backend.dto.response.ApplicantDetailsgetResponseDTO;
 import com.example.CarrerLink_backend.dto.response.JobgetResponseDTO;
