@@ -50,6 +50,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register/company",
                                 "/api/auth/register/student",
+                                "/api/auth/*",
                                 "/api/auth/register/admin",
                                 "/api/auth/CreateRoles",
                                 "/api/notifications/**",

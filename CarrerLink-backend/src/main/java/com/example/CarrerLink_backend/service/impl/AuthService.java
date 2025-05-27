@@ -2,10 +2,7 @@ package com.example.CarrerLink_backend.service.impl;
 
 
 import com.example.CarrerLink_backend.dto.AdminSaveRequestDTO;
-import com.example.CarrerLink_backend.dto.request.CompanySaveRequestDTO;
-import com.example.CarrerLink_backend.dto.request.LoginRequestDTO;
-import com.example.CarrerLink_backend.dto.request.RegisterRequestDTO;
-import com.example.CarrerLink_backend.dto.request.StudentSaveRequestDTO;
+import com.example.CarrerLink_backend.dto.request.*;
 import com.example.CarrerLink_backend.dto.response.LoginResponseDTO;
 import com.example.CarrerLink_backend.dto.response.RegisterResponseDTO;
 import com.example.CarrerLink_backend.entity.Company;
@@ -20,6 +17,8 @@ import com.example.CarrerLink_backend.service.StudentService;
 import lombok.AllArgsConstructor;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +29,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @AllArgsConstructor
@@ -45,6 +46,7 @@ public class AuthService {
     private final StudentService studentService;
     private final CompanyService companyService;
     private final AdminService adminService;
+    private final JavaMailSender mailSender;
 
     public List<UserEntity> getAllUsers(){
         return userRepo.findAll();
@@ -168,5 +170,57 @@ public class AuthService {
         return roleRepo.save(rolesEntity);
     }
 
+
+    private Map<String, String> otpStorage = new ConcurrentHashMap<>();
+
+    public boolean sendOtpToEmail(String email) {
+        UserEntity user = userRepo.findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+
+        String otp = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        otpStorage.put(email, otp);
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("Your OTP Code");
+            message.setText("Your OTP for password reset is: " + otp);
+            mailSender.send(message);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Đặt lại mật khẩu nếu OTP hợp lệ
+    @Transactional
+    public boolean resetPassword(ResetPasswordRequestDTO resetRequest) {
+        String email = resetRequest.getEmail();
+        String otp = resetRequest.getOtp();
+        String newPassword = resetRequest.getNewPassword();
+
+        if (!otpStorage.containsKey(email)) {
+            return false;
+        }
+        String validOtp = otpStorage.get(email);
+        if (!validOtp.equalsIgnoreCase(otp)) {
+            return false;
+        }
+
+        UserEntity user = userRepo.findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+        otpStorage.remove(email);
+        return true;
+    }
 
 }

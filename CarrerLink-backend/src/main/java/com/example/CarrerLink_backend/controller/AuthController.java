@@ -2,10 +2,7 @@ package com.example.CarrerLink_backend.controller;
 
 
 import com.example.CarrerLink_backend.dto.AdminSaveRequestDTO;
-import com.example.CarrerLink_backend.dto.request.CompanySaveRequestDTO;
-import com.example.CarrerLink_backend.dto.request.LoginRequestDTO;
-import com.example.CarrerLink_backend.dto.request.RegisterRequestDTO;
-import com.example.CarrerLink_backend.dto.request.StudentSaveRequestDTO;
+import com.example.CarrerLink_backend.dto.request.*;
 import com.example.CarrerLink_backend.dto.response.LoginResponseDTO;
 import com.example.CarrerLink_backend.dto.response.RegisterResponseDTO;
 import com.example.CarrerLink_backend.entity.RolesEntity;
@@ -83,4 +80,25 @@ public class AuthController {
         return ResponseEntity.ok(authService.createRoles(rolesEntity));
     }
 
+    // Gửi OTP cho email khi quên mật khẩu
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        boolean sent = authService.sendOtpToEmail(email);
+        if(sent) {
+            return ResponseEntity.ok("OTP sent to your email");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to send OTP");
+        }
+    }
+
+    // Reset mật khẩu với OTP và mật khẩu mới
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO resetRequestDTO) {
+        boolean result = authService.resetPassword(resetRequestDTO);
+        if (!result) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("OTP không hợp lệ hoặc email không tồn tại.");
+        }
+        return ResponseEntity.ok("Đổi mật khẩu thành công.");
+    }
 }

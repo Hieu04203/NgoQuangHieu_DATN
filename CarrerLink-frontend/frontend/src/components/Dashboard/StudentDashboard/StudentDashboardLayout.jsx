@@ -30,7 +30,7 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
 
   const navigationItems = [
     { path: "/student", icon: Home, label: "Home" },
-    { path: "/student-dashboard/courses", icon: BookOpen, label: "Quảng cáo" },
+    // { path: "/student-dashboard/courses", icon: BookOpen, label: "Quảng cáo" },
     { path: "/student-dashboard/jobs", icon: Briefcase, label: "Công Việc" },
     {
       path: "",
