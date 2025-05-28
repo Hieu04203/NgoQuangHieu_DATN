@@ -58,7 +58,7 @@ const StudentAuth = () => {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                            Tên người dùng
+                                Tên người dùng
                             </label>
                             <div className="relative">
                                 <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -77,7 +77,7 @@ const StudentAuth = () => {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                            Mật khẩu
+                                Mật khẩu
                             </label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -109,10 +109,11 @@ const StudentAuth = () => {
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Quên mật khẩu?
-                                </a>
+                                <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Quên mật khẩu?
+                                </Link>
                             </div>
+
                         </div>
 
                         <button
@@ -125,9 +126,9 @@ const StudentAuth = () => {
 
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
-                        Bạn chưa có tài khoản?{" "}
+                            Bạn chưa có tài khoản?{" "}
                             <Link to="/student-register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Đăng ký ngay
+                                Đăng ký ngay
                             </Link>
                         </p>
                     </div>

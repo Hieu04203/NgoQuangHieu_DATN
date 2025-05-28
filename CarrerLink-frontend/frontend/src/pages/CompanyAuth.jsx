@@ -2,28 +2,28 @@
 import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import {useNavigate, useLocation, Link} from "react-router-dom"; // Import useNavigate
+import { useNavigate, useLocation, Link } from "react-router-dom"; // Import useNavigate
 
 import LoginApi from "../api/LoginApi";
 import { AuthContext } from "../api/AuthProvider";
-import {Lock, User} from "lucide-react";
+import { Lock, User } from "lucide-react";
 
 const CompanyAuth = () => {
     const { setToken } = useContext(AuthContext);
- 
-    const [formData,setFormData] = useState({
-        username:'',
-        password:''
+
+    const [formData, setFormData] = useState({
+        username: '',
+        password: ''
     });
     const navigate = useNavigate(); // Initialize useNavigate
     const location = useLocation();
-    const [error,setError] = useState('');
-    const handleChange = (event) =>{
-        const {name,value} = event.target;
+    const [error, setError] = useState('');
+    const handleChange = (event) => {
+        const { name, value } = event.target;
         setFormData(
             {
                 ...formData,
-                [name]:value
+                [name]: value
             }
         )
     }
@@ -34,7 +34,7 @@ const CompanyAuth = () => {
 
         try {
             const response = await LoginApi(formData);
-            
+
             if (response.token) {
                 setToken(response.token);
                 navigate("/company-dashboard"); // Redirect to Dashboard on success
@@ -62,10 +62,10 @@ const CompanyAuth = () => {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                            Tên người dùng
+                                Tên người dùng
                             </label>
                             <div className="relative">
-                                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400"/>
+                                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
                                     id="username"
                                     name="username"
@@ -81,10 +81,10 @@ const CompanyAuth = () => {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                            Mật khẩu
+                                Mật khẩu
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400"/>
+                                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
                                     id="password"
                                     name="password"
@@ -113,9 +113,9 @@ const CompanyAuth = () => {
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Quên mật khẩu?
-                                </a>
+                                <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Quên mật khẩu?
+                                </Link>
                             </div>
                         </div>
 
@@ -129,9 +129,9 @@ const CompanyAuth = () => {
 
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
-                        Bạn chưa có tài khoản?{" "}
+                            Bạn chưa có tài khoản?{" "}
                             <Link to="/company-register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Đăng ký ngay
+                                Đăng ký ngay
                             </Link>
                         </p>
                     </div>

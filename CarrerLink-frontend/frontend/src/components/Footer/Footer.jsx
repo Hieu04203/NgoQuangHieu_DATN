@@ -1,36 +1,44 @@
 import React from 'react';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-100 rounded-lg shadow dark:bg-gray-900 mt-8">
-            <div className="w-full max-w-screen-xl mx-auto px-6 py-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                    <a href="/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                        <span className="text-2xl font-semibold text-gray-800 dark:text-white">CareerLink</span>
+        <footer className="bg-gray-100 dark:bg-gray-900 mt-8">
+            <div className="max-w-screen-xl mx-auto px-6 py-10">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <a href="/" className="text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-0">
+                        CareerLink
                     </a>
-                    <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-600 sm:mb-0 dark:text-gray-400">
-                        <li>
-                            <a href="/" className="hover:underline me-4 md:me-6">Home</a>
-                        </li>
-                        <li>
-                            <a href="/jobs" className="hover:underline me-4 md:me-6">Công việc</a>
-                        </li>
-                        <li>
-                            <a href="/employer" className="hover:underline me-4 md:me-6">Công ty</a>
-                        </li>
-                        <li>
-                            <a href="/courses" className="hover:underline me-4 md:me-6">Quảng cáo</a>
-                        </li>
-                        <li>
-                            <a href="/contact" className="hover:underline">Liên hệ</a>
-                        </li>
+                    <ul className="flex flex-wrap space-x-6 text-gray-600 dark:text-gray-400 text-sm font-medium">
+                        <li><a href="/" className="hover:text-indigo-600 dark:hover:text-indigo-400">Trang chủ</a></li>
+                        <li><a href="/jobs" className="hover:text-indigo-600 dark:hover:text-indigo-400">Tìm việc</a></li>
+                        <li><a href="/employer" className="hover:text-indigo-600 dark:hover:text-indigo-400">Nhà tuyển dụng</a></li>
+                        <li><a href="/courses" className="hover:text-indigo-600 dark:hover:text-indigo-400">Khóa học</a></li>
+                        <li><a href="/blog" className="hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a></li>
+                        <li><a href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400">Liên hệ</a></li>
+                        <li><a href="/support" className="hover:text-indigo-600 dark:hover:text-indigo-400">Hỗ trợ</a></li>
+                        <li><a href="/privacy-policy" className="hover:text-indigo-600 dark:hover:text-indigo-400">Chính sách bảo mật</a></li>
                     </ul>
                 </div>
-                <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700" />
-                <div className="text-center">
-                    <span className="block text-sm text-gray-600 dark:text-gray-400">
-                        © 2025 <a href="/" className="hover:underline">CareerLink™</a>. All Rights Reserved.
-                    </span>
+
+                <hr className="my-8 border-gray-300 dark:border-gray-700" />
+
+                <div className="flex flex-col sm:flex-row sm:justify-between items-center text-gray-500 dark:text-gray-400 text-sm space-y-4 sm:space-y-0">
+                    <p>© 2025 CareerLink. All rights reserved.</p>
+                    <div className="flex space-x-5">
+                        <a href="https://facebook.com" aria-label="Facebook" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                            <FaFacebookF size={18} />
+                        </a>
+                        <a href="https://twitter.com" aria-label="Twitter" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                            <FaTwitter size={18} />
+                        </a>
+                        <a href="https://linkedin.com" aria-label="LinkedIn" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                            <FaLinkedinIn size={18} />
+                        </a>
+                        <a href="https://instagram.com" aria-label="Instagram" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                            <FaInstagram size={18} />
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>

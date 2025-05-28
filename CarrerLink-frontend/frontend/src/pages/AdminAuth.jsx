@@ -40,7 +40,7 @@ const AdminAuth = () => {
                 const adminResponse = await getAdminByUserId(extractUsernameFromToken(response.token)); // Assuming response contains userId
 
                 if (!adminResponse.success || !adminResponse.data) {
-                    throw new Error('Không được chấp thuận cho hệ thống'+adminResponse.success+extractUsernameFromToken(response.token));
+                    throw new Error('Không được chấp thuận cho hệ thống' + adminResponse.success + extractUsernameFromToken(response.token));
                 }
 
                 if (adminResponse.data.status) {
@@ -91,10 +91,10 @@ const AdminAuth = () => {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                            Tên người dùng
+                                Tên người dùng
                             </label>
                             <div className="relative">
-                                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400"/>
+                                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
                                     id="username"
                                     name="username"
@@ -110,10 +110,10 @@ const AdminAuth = () => {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                            Mật khẩu
+                                Mật khẩu
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400"/>
+                                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                                 <input
                                     id="password"
                                     name="password"
@@ -140,9 +140,9 @@ const AdminAuth = () => {
                             </div>
 
                             <div className="text-sm">
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Quên mật khẩu?
-                                </a>
+                                <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Quên mật khẩu?
+                                </Link>
                             </div>
                         </div>
 
@@ -156,9 +156,9 @@ const AdminAuth = () => {
 
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
-                        Bạn chưa có tài khoản?{" "}
+                            Bạn chưa có tài khoản?{" "}
                             <Link to="/admin-register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Đăng ký ngay
+                                Đăng ký ngay
                             </Link>
                         </p>
                     </div>
