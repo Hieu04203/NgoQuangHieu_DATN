@@ -14,6 +14,7 @@ import com.example.CarrerLink_backend.repo.JobRepo;
 import com.example.CarrerLink_backend.repo.StudentJobsRepo;
 import com.example.CarrerLink_backend.repo.TechnologyRepo;
 import com.example.CarrerLink_backend.service.JobService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import org.modelmapper.ModelMapper;
@@ -128,15 +129,20 @@ public class JobServiceImpl implements JobService {
 
     }
 
+    @Transactional
     @Override
     public String deleteJob(int jobId) {
-        if(jobRepo.existsById(jobId)){
-            jobRepo.deleteById(jobId);
-            return "Job deleted";
-        }else{
-            throw new RuntimeException("Job not found");
-        }
+        Job job = jobRepo.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        job.getTechnologies().clear(); // Xoá liên kết với Technology
+        jobRepo.save(job);             // Cập nhật DB
+
+        jobRepo.delete(job);           // Sau đó mới xoá job
+
+        return "Job deleted";
     }
+
 
     @Override
     public List<JobgetResponseDTO> getAllJobByCompany(int companyId) {

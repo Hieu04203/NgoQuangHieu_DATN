@@ -57,10 +57,10 @@ public class Student {
     private List<Review> reviews;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "cv_id")
-
     private CV cv;
+
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Projects> projects;

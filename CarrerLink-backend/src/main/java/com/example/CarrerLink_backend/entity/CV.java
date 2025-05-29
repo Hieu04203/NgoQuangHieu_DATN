@@ -60,7 +60,7 @@ public class CV {
     private String refereeEmail;
     @OneToOne
     @JoinColumn(name = "student_id")
-
+    @JsonIgnore
     private Student student;
 
 
