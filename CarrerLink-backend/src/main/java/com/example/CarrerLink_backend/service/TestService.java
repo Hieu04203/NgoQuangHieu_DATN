@@ -12,4 +12,5 @@ public interface TestService {
     Optional<Test> getTestById(Long testId);
     Test updateTest(Long testId, Test test);
     void deleteTest(Long testId);
+    void deleteQuestion(Long questionId);
 }

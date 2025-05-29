@@ -2,6 +2,7 @@
 package com.example.CarrerLink_backend.service.impl;
 
 import com.example.CarrerLink_backend.entity.Test;
+import com.example.CarrerLink_backend.repo.QuestionRepository;
 import com.example.CarrerLink_backend.repo.TestRepository;
 import com.example.CarrerLink_backend.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ public class TestServiceImpl implements TestService {
 
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Override
     public Test saveTest(Test test) {
@@ -40,5 +43,10 @@ public class TestServiceImpl implements TestService {
     @Override
     public void deleteTest(Long testId) {
         testRepository.deleteById(testId);
+    }
+
+    @Override
+    public void deleteQuestion(Long questionId){
+        questionRepository.deleteById(questionId);
     }
 }

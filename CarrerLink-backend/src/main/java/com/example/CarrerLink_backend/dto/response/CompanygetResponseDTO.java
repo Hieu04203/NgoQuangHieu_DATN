@@ -34,5 +34,6 @@ public class CompanygetResponseDTO {
     private List<ProductDTO> products;
     private String companyPicUrl;
     private String coverPicUrl;
+    private boolean status;
 }
 

@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -103,6 +104,7 @@ private final AmazonS3 amazonS3;
             student.setTechnologies(newTechnologies); // Replace the entire list
         }
     }
+
     @Override
     public String updateStudent(StudentUpdateRequestDTO studentUpdateRequestDTO, MultipartFile imageFile) {
         try {
@@ -140,48 +142,48 @@ private final AmazonS3 amazonS3;
         }
     }
 
-
-
-
-
-    public String saveImgFile(int id, MultipartFile file) throws IOException {
+    public String saveImgFile(int userId, MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is empty or null");
         }
 
-        // Fetch student
-        Student student = studentRepo.findByUser_Id(id)
-                .orElseThrow(() -> new RuntimeException("Student not found for ID: " + id));
-
-        // Fetch existing profile image if available
-        ProfileImage profileImage = profileImageRepo.findByUserId(student.getUser().getId())
-                .orElse(null);
-
-        // Delete existing image from S3 if it exists
-        if (profileImage != null && profileImage.getUrl() != null) {
-            String oldImageKey = profileImage.getUrl().substring(profileImage.getUrl().lastIndexOf("/") + 1);
-            amazonS3.deleteObject(bucketName, "profile_image/" + oldImageKey);
+        // Thư mục lưu file vật lý
+        String uploadDir = "D:/Test/NgoQuangHieu_DATN/Picture";
+        File uploadPath = new File(uploadDir);
+        if (!uploadPath.exists()) {
+            uploadPath.mkdirs();
         }
 
-        // Upload new image to S3
-        CommonFileSaveBinaryDataDto resource = fileService.createResource(file, "profile_image/", bucketName);
+        // Tạo tên file mới tránh trùng
+        String newFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
-        // Update profile image record
-        if (profileImage == null) {
-            profileImage = new ProfileImage();
+        // File đích lưu trên đĩa
+        File destination = new File(uploadPath, newFileName);
+
+        // Lưu file vật lý
+        file.transferTo(destination);
+
+        // URL để frontend gọi ảnh (mapping static resource)
+        String relativeUrl = "/images/student-profile-pics/" + newFileName;
+
+        // Cập nhật hoặc tạo mới ProfileImage
+        Student student = studentRepo.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Student not found for user ID: " + userId));
+
+        ProfileImage profileImage = profileImageRepo.findByUserId(userId)
+                .orElse(new ProfileImage());
+
+        if (profileImage.getId() == null) {
             profileImage.setId(UUID.randomUUID().toString());
         }
-
-        profileImage.setUrl(resource.getUrl()); // Store only the new URL
+        profileImage.setUrl(relativeUrl);
         profileImage.setFileName(file.getOriginalFilename());
         profileImage.setUser(student.getUser());
 
         profileImageRepo.save(profileImage);
 
-        return profileImage.getUrl();
+        return relativeUrl;
     }
-
-
 
 
     @Override

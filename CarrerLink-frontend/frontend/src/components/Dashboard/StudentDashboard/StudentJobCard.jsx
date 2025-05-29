@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import ApplyModal from './ApplyModal';
+import JobDetailModal from './JobDetailModal';
 
 function StudentJobCard({ job, onApply, className }) {
     const [showApplyModal, setShowApplyModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false);
 
     const handleApplyClick = async (coverLetter) => {
         try {
@@ -23,13 +25,12 @@ function StudentJobCard({ job, onApply, className }) {
                     </p>
                 </div>
                 <span
-                    className={`px-3 py-1 rounded-full text-sm ${
-                        job.status === "CLOSED"
+                    className={`px-3 py-1 rounded-full text-sm ${job.status === "CLOSED"
                             ? "bg-red-100 text-red-700"
                             : job.status === "ACTIVE"
                                 ? "bg-green-50 text-green-700"
                                 : "bg-gray-100 text-gray-600"
-                    }`}
+                        }`}
                 >
                     {job.status}
                 </span>
@@ -45,9 +46,7 @@ function StudentJobCard({ job, onApply, className }) {
                 ))}
             </div>
 
-            <div className="flex justify-between items-center mt-auto">
-                <p className="text-sm text-gray-600">{job.applications} applications</p>
-
+            <div className="flex justify-between items-center mt-auto space-x-2">
                 {job.applied ? (
                     <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg">
                         Đã nộp đơn ✓
@@ -55,16 +54,23 @@ function StudentJobCard({ job, onApply, className }) {
                 ) : (
                     <button
                         onClick={() => setShowApplyModal(true)}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            job.status === "CLOSED"
+                        className={`px-4 py-2 rounded-lg transition-colors ${job.status === "CLOSED"
                                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                                 : "bg-indigo-600 text-white hover:bg-indigo-700"
-                        }`}
+                            }`}
                         disabled={job.status === "CLOSED"}
                     >
                         {job.status === "CLOSED" ? "Closed" : "Apply Now"}
                     </button>
                 )}
+
+                {/* Nút xem chi tiết */}
+                <button
+                    onClick={() => setShowDetailModal(true)}
+                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+                >
+                    Xem Chi Tiết
+                </button>
             </div>
 
             {showApplyModal && (
@@ -72,6 +78,13 @@ function StudentJobCard({ job, onApply, className }) {
                     jobTitle={job.jobTitle}
                     onClose={() => setShowApplyModal(false)}
                     onApply={handleApplyClick}
+                />
+            )}
+
+            {showDetailModal && (
+                <JobDetailModal
+                    jobId={job.jobId}
+                    onClose={() => setShowDetailModal(false)}
                 />
             )}
         </div>

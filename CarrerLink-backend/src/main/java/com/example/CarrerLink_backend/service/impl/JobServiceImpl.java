@@ -185,5 +185,32 @@ public class JobServiceImpl implements JobService {
 
     }
 
+    @Override
+    public JobgetResponseDTO getJobDetails(int jobId) {
+        Job job = jobRepo.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+
+        JobgetResponseDTO responseDTO = new JobgetResponseDTO();
+        responseDTO.setJobId(job.getJobId());
+        responseDTO.setJobTitle(job.getJobTitle());
+        responseDTO.setJobType(job.getJobType());
+        responseDTO.setDescription(job.getDescription());
+        responseDTO.setRequirements(job.getRequirements());
+        responseDTO.setStatus(job.getStatus());
+        responseDTO.setRate(job.getRate());
+        responseDTO.setLocation(job.getLocation());
+        responseDTO.setCompanyName(job.getCompany().getName());
+
+        // Convert technologies (assuming job.getTechnologies() returns a list of Technology entities)
+        List<TechnologyDTO> techDTOs = job.getTechnologies().stream()
+                .map(tech -> new TechnologyDTO(tech.getTechId(), tech.getTechName()))
+                .collect(Collectors.toList());
+        responseDTO.setTechnologies(techDTOs);
+
+        return responseDTO;
+    }
+
+
+
 
 }
