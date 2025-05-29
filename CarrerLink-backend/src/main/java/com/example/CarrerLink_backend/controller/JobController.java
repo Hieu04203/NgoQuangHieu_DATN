@@ -1,6 +1,7 @@
 package com.example.CarrerLink_backend.controller;
 
 
+import com.example.CarrerLink_backend.dto.JobDetailsDTO;
 import com.example.CarrerLink_backend.dto.response.ApplicantDetailsgetResponseDTO;
 import com.example.CarrerLink_backend.dto.response.JobgetResponseDTO;
 import com.example.CarrerLink_backend.dto.response.StudentgetResponseDTO;
@@ -152,6 +153,20 @@ private final JobService jobService;
 
     }
 
+    @Operation(
+            summary = "Get job detail",
+            description = "Fetch detailed information of a job by job ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully fetched job detail"),
+            @ApiResponse(responseCode = "400", description = "Invalid job ID"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("/detail/{jobId}")
+    public ResponseEntity<StandardResponse> getJobDetail(@PathVariable int jobId) {
+        JobgetResponseDTO jobDetails = jobService.getJobDetails(jobId);
+        return ResponseEntity.ok(new StandardResponse(true, "Job detail fetched successfully", jobDetails));
+    }
 
 
 }

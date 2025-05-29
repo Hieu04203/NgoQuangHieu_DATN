@@ -1,6 +1,6 @@
 
 
-import { useState,useContext,useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import Swal from 'sweetalert2';
@@ -17,7 +17,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import JobFieldStudentChart from "./JobFieldStudentChart";
 import TechnologyStudentChart from "./TechnologyStudentChart";
-import StudentsList  from "./StudentsList";
+import StudentsList from "./StudentsList";
 import StudentsTab from "./StudentsTab";
 
 
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
                             ...prev,
                             ...newCounts
                         }));
-                       console.log(message.body);
+                        console.log(message.body);
                     } catch (error) {
                         console.error('Lỗi khi phân tích cú pháp tin nhắn WebSocket:', error);
                         console.log('Raw Body Content:', message.body);
@@ -269,12 +269,12 @@ const AdminDashboard = () => {
                                     <p className="mt-2 text-sm opacity-90">Các lĩnh vực có sẵn</p>
                                 </div>
                                 <div className="gradient-card-3 p-6 rounded-2xl text-white">
-                                    <h3 className="text-lg font-medium mb-2 opacity-90">CV đang chờ xử lý</h3>
+                                    <h3 className="text-lg font-medium mb-2 opacity-90">Tổng số CV</h3>
                                     <p className="text-3xl font-bold">{counts.cvs || 0}</p>
                                     <p className="mt-2 text-sm opacity-90">Đang chờ xem xét</p>
                                 </div>
                                 <div className="gradient-card-4 p-6 rounded-2xl text-white">
-                                    <h3 className="text-lg font-medium mb-2 opacity-90">Các bài kiểm tra theo lịch trình</h3>
+                                    <h3 className="text-lg font-medium mb-2 opacity-90">Các bài kiểm tra</h3>
                                     <p className="text-3xl font-bold">{counts.tests || 0}</p>
                                     <p className="mt-2 text-sm opacity-90">Bài kiểm tra tuần này</p>
                                 </div>
@@ -285,12 +285,12 @@ const AdminDashboard = () => {
                             </div>
                         </>
                     )}
-                    {activeTab === 'students' && <StudentsTab/>}
+                    {activeTab === 'students' && <StudentsTab />}
                     {activeTab === 'technologies' && <TechnologyManagement />}
 
                     {activeTab === 'jobs' && <JobFieldManagement />}
 
-                    {activeTab === 'cvs' && <StudentsList/>}
+                    {activeTab === 'cvs' && <StudentsList />}
                     {activeTab === 'tests' && <TestManager initialTests={tests} />}
                     {activeTab === 'Courses' && <Course />}
                     {activeTab === 'companies' && <CompanyList />}

@@ -207,12 +207,57 @@ const TestManager = () => {
         setShowQuestionForm(true);
     };
 
-    const handleDeleteQuestion = (key) => {
-        setNewTest(prev => ({
-            ...prev,
-            questions: (prev.questions || []).filter(q => (q.questionId || q.tempId || q) !== key)
-        }));
+    const API_DELETE_QUESTION_URL = 'http://localhost:8091/api/tests/questions';
+
+    const handleDeleteQuestion = async (key) => {
+        if (!token) {
+            Swal.fire('Lỗi', 'Vui lòng đăng nhập để xóa câu hỏi', 'error');
+            return;
+        }
+
+        const isExisting = typeof key === 'number'; // Xác định key có phải id backend không
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: 'Câu hỏi này sẽ bị xóa vĩnh viễn.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    if (isExisting) {
+                        // Gọi API xóa câu hỏi
+                        await axios.delete(`${API_DELETE_QUESTION_URL}/${key}`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                    }
+
+                    // Log để debug
+                    setNewTest(prev => {
+                        console.log('Before filter:', prev.questions);
+                        const filteredQuestions = (prev.questions || []).filter(q =>
+                            // So sánh questionId (number) với key
+                            (q.id) !== key
+                        );
+                        console.log('After filter:', filteredQuestions);
+                        return {
+                            ...prev,
+                            questions: filteredQuestions
+                        };
+                    });
+
+                    Swal.fire('Thành công', 'Câu hỏi đã được xóa.', 'success');
+                } catch (error) {
+                    console.error('Lỗi xóa câu hỏi:', error);
+                    Swal.fire('Lỗi', 'Không thể xóa câu hỏi.', 'error');
+                }
+            }
+        });
     };
+
+
 
     const resetTestForm = () => {
         setNewTest({
@@ -386,7 +431,7 @@ const TestManager = () => {
                                                 <Edit size={22} />
                                             </button>
                                             <button
-                                                onClick={() => handleDeleteQuestion(question.questionId || question.tempId || index)}
+                                                onClick={() => { console.log(question); handleDeleteQuestion(question.id) }}
                                                 className="p-2 text-red-600 hover:text-red-800 transition-colors duration-200"
                                             >
                                                 <Trash2 size={22} />

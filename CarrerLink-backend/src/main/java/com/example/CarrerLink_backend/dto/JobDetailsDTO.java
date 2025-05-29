@@ -11,8 +11,7 @@ public class JobDetailsDTO {
     private String description;
     private String company;
     private String location;
-    private String salaryRange;
-    private LocalDate deadline;
+    private int salaryRange;
 
     // Getters & Setters
 }

@@ -181,6 +181,7 @@ public class AuthService {
 
         String otp = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         otpStorage.put(email, otp);
+        System.out.println("OTP for " + email + ": " + otp);
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();

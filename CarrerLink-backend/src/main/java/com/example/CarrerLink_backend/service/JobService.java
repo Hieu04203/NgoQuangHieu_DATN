@@ -24,4 +24,6 @@ public interface JobService {
 
     String closeJob(int jobId);
 
+    JobgetResponseDTO getJobDetails(int jobId);
+
 }
