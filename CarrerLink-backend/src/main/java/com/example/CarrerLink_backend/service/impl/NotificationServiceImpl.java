@@ -42,9 +42,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
     @Override
     public List<Notification> getNotifications(int studentId) {
-        Student student = studentRepo.findByUser_Id(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
+        // Tìm student trực tiếp theo studentId
+        Student student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
         return notificationRepository.findByStudentIdOrderByCreatedAtDesc(student.getStudentId());
     }
+
 
     @Override
     public Notification markAsRead(Long id) {

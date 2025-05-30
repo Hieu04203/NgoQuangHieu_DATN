@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/cv")
+@RequestMapping("/api/cv")
 @AllArgsConstructor
 public class CVController {
 
@@ -48,12 +48,12 @@ public class CVController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping()
+    @GetMapping("/getCV")
     public ResponseEntity<StandardResponse> getCV(@RequestParam int studentId) {
-//        Student student = studentRepo.findByUser_Id(userId).orElseThrow(
-//                () -> new RuntimeException("Student not found with ID: " + userId)
-//        );
+        Student student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
         CVgetResponseDTO cv = cvService.getCV(studentId);
         return ResponseEntity.ok(new StandardResponse(true,"CV fetched successfully",cv));
     }
+
 }

@@ -136,10 +136,10 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("{stId}")
+    @GetMapping("{studentId}")
 
-    public ResponseEntity<StandardResponse> getStudentById(@PathVariable int stId){
-        StudentgetResponseDTO students = studentService.getStudentById(stId);
+    public ResponseEntity<StandardResponse> getStudentById(@PathVariable int studentId){
+        StudentgetResponseDTO students = studentService.getStudentById(studentId);
         return ResponseEntity.ok(new StandardResponse(true, "Đã tìm được ứng viên thành công", students));
     }
 

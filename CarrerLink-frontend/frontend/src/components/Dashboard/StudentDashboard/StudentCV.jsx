@@ -31,7 +31,7 @@ function App() {
     const [studentId, setStudent] = useState(null);
     const [formData, setFormData] = useState({
         personalInfo: {
-            fullName: '',
+            name: '',
             title: '',
             email: '',
             phone: '',
@@ -62,7 +62,7 @@ function App() {
     const navigate = useNavigate();
     // Prepare API payload
     const prepareCVData = (formData) => ({
-        name: formData.personalInfo.fullName,
+        name: formData.personalInfo.name,
         title: formData.personalInfo.title,
         email: formData.personalInfo.email,
         mobile: formData.personalInfo.phone,
@@ -134,9 +134,34 @@ function App() {
             fetchStudent();
         }
     }, [token]);
+
+    useEffect(() => {
+        const studentId = extractStudentIdFromToken(token);
+        console.log('studentID sau khi extract', studentId)
+        fetch(`http://localhost:8091/api/students/userId/${studentId}`)
+            .then((res) => {
+                if (!res.ok) throw new Error(`Lỗi HTTP! trạng thái: ${res.status}`);
+                return res.json();
+            })
+            .then((data) => {
+                fetch(`http://localhost:8091/api/cv/getCV?studentId=${data.data?.studentId}`)
+                    .then((res) => {
+                        if (!res.ok) throw new Error(`Lỗi HTTP! trạng thái: ${res.status}`);
+                        return res.json();
+                    })
+                    .then((data) => {
+                        console.log("Raw data:", data);
+
+                    })
+                    .catch((err) => console.error("Lỗi tải thông báo", err));
+
+            })
+            .catch((err) => console.error("Lỗi tải thông báo", err));
+    }, [token])
     const extractStudentIdFromToken = (token) => {
         try {
-            const decodedToken = JSON.parse(atob(token.split(".")[1]));
+            const decodedToken = JSON.parse(atob(token.split(".")[1]))
+
             return decodedToken.userId; // Adjust based on your token structure
         } catch (error) {
             console.error("Lỗi giải mã mã thông báo", error);
@@ -462,8 +487,8 @@ function App() {
                             </label>
                             <input
                                 type="text"
-                                name="fullName"
-                                value={formData.personalInfo.fullName}
+                                name="name"
+                                value={formData.personalInfo.name}
                                 onChange={handlePersonalInfoChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="John Doe"

@@ -55,7 +55,11 @@ public class SecurityConfig {
                                 "/api/auth/CreateRoles",
                                 "/api/notifications/**",
                                 "/ws/**",
-                                "/api/v1/acedemicCourses/filter"
+                                "/api/v1/acedemicCourses/filter",
+                                "/api/submissions/**",
+                                "/api/tests/**",
+                                "/api/enrollments/**",
+                                "/api/cv/**"
                         ).permitAll()
 
                         // Public GET endpoints

@@ -22,9 +22,10 @@ public class SkillSet {
 
     private String skillLevel;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "student_Id")
     private Student student;
+
 
     @ManyToOne
     @JoinColumn(name = "cv_id")
