@@ -49,7 +49,7 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
   const extractStudentIdFromToken = (token) => {
     try {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      return decodedToken.userId; // Adjust based on your token structure
+      return decodedToken.studentId; // Adjust based on your token structure
     } catch (error) {
       console.error("Lỗi giải mã mã thông báo", error);
       return null;
@@ -149,9 +149,8 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
               item.isDropdown ? (
                 <div key={item.label}>
                   <button
-                    className={`flex items-center justify-between w-full px-4 py-2.5 rounded-lg transition-colors text-gray-700 hover:bg-gray-50 ${
-                      isDropdownOpen ? "bg-indigo-50 text-indigo-600" : ""
-                    }`}
+                    className={`flex items-center justify-between w-full px-4 py-2.5 rounded-lg transition-colors text-gray-700 hover:bg-gray-50 ${isDropdownOpen ? "bg-indigo-50 text-indigo-600" : ""
+                      }`}
                     onClick={() => setDropdownOpen(!isDropdownOpen)}
                   >
                     <div className="flex items-center space-x-2">
@@ -159,9 +158,8 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
                       <span>{item.label}</span>
                     </div>
                     <ChevronDown
-                      className={`h-5 w-5 transition-transform ${
-                        isDropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`h-5 w-5 transition-transform ${isDropdownOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
                   {isDropdownOpen && (
@@ -170,12 +168,11 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
                         <Link
                           key={subItem.path}
                           to={subItem.path}
-                          className={`block px-4 py-2.5 rounded-lg transition-colors ${
-                            isActive(subItem.path) ||
-                            selectedSubItem === subItem.path
+                          className={`block px-4 py-2.5 rounded-lg transition-colors ${isActive(subItem.path) ||
+                              selectedSubItem === subItem.path
                               ? "bg-indigo-50 text-indigo-600"
                               : "text-gray-700 hover:bg-gray-50"
-                          }`}
+                            }`}
                           onClick={() => setSelectedSubItem(subItem.path)}
                         >
                           {subItem.label}
@@ -188,11 +185,10 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${
-                    isActive(item.path)
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${isActive(item.path)
                       ? "bg-indigo-50 text-indigo-600"
                       : "text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   <item.icon className="h-5 w-5" />
                   <span>{item.label}</span>
@@ -227,7 +223,7 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
       <div className="flex-1 ml-64">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
           <h1 className="text-xl font-semibold text-gray-800">
-          Bảng điều khiển của ứng viên
+            Bảng điều khiển của ứng viên
           </h1>
           <div className="flex items-center space-x-4">
             <div className="relative">
