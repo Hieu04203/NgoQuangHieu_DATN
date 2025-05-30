@@ -160,7 +160,7 @@ const TestPlatform = () => {
   const calculateScore = () => {
     let score = 0;
     takingTest.questions.forEach(q => {
-      if (answers[q.questionId] === q.correctAnswer) {
+      if (answers[q.id] === q.correctAnswer) {
         score += parseInt(q.marks);
       }
     });
@@ -275,7 +275,7 @@ const TestPlatform = () => {
                         <h6 className="text-xl font-semibold text-gray-800 mt-6">Câu trả lời đúng</h6>
                         <ul className="space-y-8">
                           {selectedTest.questions.map((q, index) => (
-                            <li key={q.questionId} className="bg-gray-50 p-6 rounded-xl shadow-sm">
+                            <li key={q.id} className="bg-gray-50 p-6 rounded-xl shadow-sm">
                               <p className="font-semibold text-gray-800"><strong>Q{index + 1}:</strong> {q.text} <span className="text-gray-600">({q.marks} marks)</span></p>
                               <ul className="mt-3 space-y-2 pl-6 list-disc text-gray-700">
                                 {q.options.map((opt, optIndex) => (
@@ -284,7 +284,7 @@ const TestPlatform = () => {
                                   </li>
                                 ))}
                               </ul>
-                              <p className="mt-3"><strong className="text-gray-800">Câu trả lời của bạn:</strong> <span className={results.answers[q.questionId] === q.correctAnswer ? 'text-green-600' : 'text-red-600'}>{results.answers[q.questionId] || 'Not answered'}</span></p>
+                              <p className="mt-3"><strong className="text-gray-800">Câu trả lời của bạn:</strong> <span className={results.answers[q.id] === q.correctAnswer ? 'text-green-600' : 'text-red-600'}>{results.answers[q.id] || 'Not answered'}</span></p>
                             </li>
                           ))}
                         </ul>
@@ -299,7 +299,7 @@ const TestPlatform = () => {
                         {selectedTest.questions.length > 0 ? (
                           <ul className="space-y-8">
                             {selectedTest.questions.map((q, index) => (
-                              <li key={q.questionId} className="bg-gray-50 p-6 rounded-xl shadow-sm transition-all duration-200 hover:bg-gray-100">
+                              <li key={q.id} className="bg-gray-50 p-6 rounded-xl shadow-sm transition-all duration-200 hover:bg-gray-100">
                                 <p className="font-semibold text-gray-800"><strong>Q{index + 1}:</strong> {q.text} <span className="text-gray-600">({q.marks} marks)</span></p>
                                 <ul className="mt-3 space-y-2 pl-6 list-disc text-gray-700">
                                   {q.options.map((opt, optIndex) => (
@@ -321,7 +321,7 @@ const TestPlatform = () => {
                       <h6 className="text-xl font-semibold text-gray-800 mt-6">Câu trả lời đúng</h6>
                       <ul className="space-y-8">
                         {takingTest.questions.map((q, index) => (
-                          <li key={q.questionId} className="bg-gray-50 p-6 rounded-xl shadow-sm">
+                          <li key={q.id} className="bg-gray-50 p-6 rounded-xl shadow-sm">
                             <p className="font-semibold text-gray-800"><strong>Q{index + 1}:</strong> {q.text} <span className="text-gray-600">({q.marks} marks)</span></p>
                             <ul className="mt-3 space-y-2 pl-6 list-disc text-gray-700">
                               {q.options.map((opt, optIndex) => (
@@ -330,7 +330,7 @@ const TestPlatform = () => {
                                 </li>
                               ))}
                             </ul>
-                            <p className="mt-3"><strong className="text-gray-800">Câu trả lời của bạn:</strong> <span className={answers[q.questionId] === q.correctAnswer ? 'text-green-600' : 'text-red-600'}>{answers[q.questionId] || 'Not answered'}</span></p>
+                            <p className="mt-3"><strong className="text-gray-800">Câu trả lời của bạn:</strong> <span className={answers[q.id] === q.correctAnswer ? 'text-green-600' : 'text-red-600'}>{answers[q.id] || 'Not answered'}</span></p>
                           </li>
                         ))}
                       </ul>
@@ -339,16 +339,16 @@ const TestPlatform = () => {
                     <div className="space-y-8">
                       <h5 className="text-xl font-semibold text-gray-800 mb-4">Trả lời các câu hỏi</h5>
                       {takingTest.questions.map((q, index) => (
-                        <div key={q.questionId} className="bg-gray-50 p-6 rounded-xl shadow-sm transition-all duration-200 hover:bg-gray-100">
+                        <div key={q.id} className="bg-gray-50 p-6 rounded-xl shadow-sm transition-all duration-200 hover:bg-gray-100">
                           <p className="font-semibold text-gray-800 mb-4"><strong>Q{index + 1}:</strong> {q.text} <span className="text-gray-600">({q.marks} marks)</span></p>
                           {q.options.map((opt, optIndex) => (
                             <label key={optIndex} className="flex items-center space-x-3 mb-3 cursor-pointer">
                               <input
                                 type="radio"
-                                name={`question-${q.questionId}`}
+                                name={`question-${q.id}-${optIndex}`}
                                 value={opt}
-                                checked={answers[q.questionId] === opt}
-                                onChange={() => handleAnswerChange(q.questionId, opt)}
+                                checked={answers[q.id] === opt}
+                                onChange={() => handleAnswerChange(q.id, opt)}
                                 className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500"
                               />
                               <span className="text-gray-700">{opt}</span>
