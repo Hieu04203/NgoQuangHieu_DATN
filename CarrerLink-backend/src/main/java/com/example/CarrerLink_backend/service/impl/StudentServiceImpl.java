@@ -2,6 +2,8 @@ package com.example.CarrerLink_backend.service.impl;
 
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.CarrerLink_backend.dto.*;
 import com.example.CarrerLink_backend.dto.request.ApplyJobRequestDTO;
 import com.example.CarrerLink_backend.dto.request.StudentSaveRequestDTO;
@@ -33,6 +35,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -63,6 +69,7 @@ private final AmazonS3 amazonS3;
     private final JobRecommendationServiceImpl jobRecommendationService;
 
     private SimpMessagingTemplate messagingTemplate;
+    private final Cloudinary cloudinary;
 
     @Override
     @Transactional
@@ -106,41 +113,52 @@ private final AmazonS3 amazonS3;
     }
 
     @Override
-    public String updateStudent(StudentUpdateRequestDTO studentUpdateRequestDTO, MultipartFile imageFile) {
+    public String updateStudent(StudentUpdateRequestDTO studentUpdateRequestDTO, MultipartFile imageFile) throws IOException {
+        Student existingStudent = studentRepo.findById(studentUpdateRequestDTO.getStudentId())
+                .orElseThrow(() -> new RuntimeException("Student with ID " + studentUpdateRequestDTO.getStudentId() + " not found"));
+
+        // Cập nhật các trường
+        existingStudent.setFirstName(studentUpdateRequestDTO.getFirstName());
+        existingStudent.setLastName(studentUpdateRequestDTO.getLastName());
+        existingStudent.setEmail(studentUpdateRequestDTO.getEmail());
+        existingStudent.setAddress(studentUpdateRequestDTO.getAddress());
+
+        updateJobFields(studentUpdateRequestDTO, existingStudent);
+        updateTechnologies(studentUpdateRequestDTO, existingStudent);
+
+        // Upload ảnh nếu có
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String profilePicUrl = uploadImageToCloudinary(imageFile);
+            existingStudent.setProfilePicUrl(profilePicUrl);
+        }
+
+        studentRepo.save(existingStudent);
+
+        return existingStudent.getProfilePicUrl();
+    }
+
+    private String uploadImageToCloudinary(MultipartFile file) throws IOException {
+        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("folder", "students"));
+        return uploadResult.get("secure_url").toString();
+    }
+
+    public String uploadImageAndGetUrl(MultipartFile file) {
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path uploadPath = Paths.get("uploads/images/");
         try {
-            // Fetch the student entity using student ID
-            Student existingStudent = studentRepo.findById(studentUpdateRequestDTO.getStudentId())
-                    .orElseThrow(() -> new RuntimeException("Student with ID " + studentUpdateRequestDTO.getStudentId() + " not found"));
-
-            // Retrieve the User ID associated with this Student
-            int userId = existingStudent.getUser().getId();
-
-            // Update student details
-            existingStudent.setFirstName(studentUpdateRequestDTO.getFirstName());
-            existingStudent.setLastName(studentUpdateRequestDTO.getLastName());
-            existingStudent.setEmail(studentUpdateRequestDTO.getEmail());
-            existingStudent.setAddress(studentUpdateRequestDTO.getAddress());
-
-            updateJobFields(studentUpdateRequestDTO, existingStudent);
-            updateTechnologies(studentUpdateRequestDTO, existingStudent);
-
-            // If an image file is provided, save it using the mapped User ID
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String profilePicUrl = saveImgFile(userId, imageFile); // Save image and get the URL
-
-                // Update profilePicUrl in Student table
-                existingStudent.setProfilePicUrl(profilePicUrl);
-
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
             }
-
-            studentRepo.save(existingStudent);
-
-            return existingStudent.getProfilePicUrl();
-
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/images/" + fileName;  // URL mà frontend có thể gọi
         } catch (IOException e) {
-            throw new RuntimeException("Error updating student: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to store file", e);
         }
     }
+
+
 
     public String saveImgFile(int userId, MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
