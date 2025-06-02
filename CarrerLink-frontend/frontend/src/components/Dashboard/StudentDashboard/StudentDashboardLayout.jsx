@@ -30,19 +30,8 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
 
   const navigationItems = [
     { path: "/student", icon: Home, label: "Home" },
-    // { path: "/student-dashboard/courses", icon: BookOpen, label: "Quảng cáo" },
     { path: "/student-dashboard/jobs", icon: Briefcase, label: "Công Việc" },
-    {
-      path: "",
-      icon: FileText,
-      label: "TEST",
-      isDropdown: true,
-      subItems: [
-        { path: "/testplatform", label: "Bài TEST" },
-        // { path: "/testplatform/view-marks", label: "Xem điểm" },
-        // { path: "/testplatform/check-answers", label: "Kiểm tra câu trả lời" },
-      ],
-    },
+    { path: "/testplatform", icon: FileText, label: "TEST" },
     { path: "/student-dashboard/cv", icon: FileSpreadsheet, label: "CV" },
   ];
 
@@ -145,69 +134,21 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
             </Link>
           </div>
           <nav className="flex-1 px-4 py-6 space-y-1">
-            {navigationItems.map((item) =>
-              item.isDropdown ? (
-                <div key={item.label}>
-                  <button
-                    className={`flex items-center justify-between w-full px-4 py-2.5 rounded-lg transition-colors text-gray-700 hover:bg-gray-50 ${isDropdownOpen ? "bg-indigo-50 text-indigo-600" : ""
-                      }`}
-                    onClick={() => setDropdownOpen(!isDropdownOpen)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </div>
-                    <ChevronDown
-                      className={`h-5 w-5 transition-transform ${isDropdownOpen ? "rotate-180" : ""
-                        }`}
-                    />
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="ml-6 space-y-1">
-                      {item.subItems.map((subItem) => (
-                        <Link
-                          key={subItem.path}
-                          to={subItem.path}
-                          className={`block px-4 py-2.5 rounded-lg transition-colors ${isActive(subItem.path) ||
-                              selectedSubItem === subItem.path
-                              ? "bg-indigo-50 text-indigo-600"
-                              : "text-gray-700 hover:bg-gray-50"
-                            }`}
-                          onClick={() => setSelectedSubItem(subItem.path)}
-                        >
-                          {subItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${isActive(item.path)
-                      ? "bg-indigo-50 text-indigo-600"
-                      : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </Link>
-              )
-            )}
+            {navigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${isActive(item.path)
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-gray-700 hover:bg-gray-50"
+                  }`}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            ))}
           </nav>
           <div className="p-4 border-t border-gray-200 space-y-1">
-            {/*<Link*/}
-            {/*  to="/student-dashboard/settings"*/}
-            {/*  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${*/}
-            {/*    isActive("/student-dashboard/settings")*/}
-            {/*      ? "bg-indigo-50 text-indigo-600"*/}
-            {/*      : "text-gray-700 hover:bg-gray-50"*/}
-            {/*  }`}*/}
-            {/*>*/}
-            {/*  <Settings className="h-5 w-5" />*/}
-            {/*  <span>Settings</span>*/}
-            {/*</Link>*/}
             <button
               className="w-full flex items-center space-x-2 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={handleLogout}
@@ -227,15 +168,6 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
           </h1>
           <div className="flex items-center space-x-4">
             <div className="relative">
-              {/*<button*/}
-              {/*  className="p-2 text-gray-600 hover:bg-gray-100 rounded-full"*/}
-              {/*  onClick={() => setShowNotifications(!showNotifications)}*/}
-              {/*>*/}
-              {/*  <Bell className="h-5 w-5" />*/}
-              {/*  {unreadCount > 0 && (*/}
-              {/*    <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>*/}
-              {/*  )}*/}
-              {/*</button>*/}
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 max-h-60 overflow-y-auto">
                   {notifications.length === 0 ? (

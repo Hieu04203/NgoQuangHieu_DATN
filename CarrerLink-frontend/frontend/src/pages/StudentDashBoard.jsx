@@ -8,6 +8,7 @@ import {
 import SkillProgress from "../components/studentDashboard/SkillProgress";
 import TechJobCard from "../components/studentDashboard/TechJobCard";
 import SuggestedProjects from "../components/Dashboard/StudentDashboard/SuggestedProjects";
+import { Loader2 } from "lucide-react";
 
 // Fake data for dashboard statistics
 const dashboardStats = {
@@ -60,7 +61,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchStudentData = async () => {
+    const fetchData = async () => {
       if (!token) {
         setLoading(false);
         return;
@@ -68,39 +69,46 @@ const StudentDashboard = () => {
       try {
         const username = extractUsernameFromToken(token);
         if (!username) return;
-        const response = await getStudentByUsername(username);
-        if (isMounted && response?.success) {
-          setStudentInfo(response.data);
-          setSkills(response.data.skills || []);
-          setTechnologies(response.data.technologies || []);
-          setJobFields(response.data.appliedJobFields || []);
-        }
-        // Fetch Project Recommendations
-        const projectsResponse = await getProjectRecommendations(
-          token,
-          response?.data?.studentId
-        );
-        console.log("Projects Response:", projectsResponse);
 
-        if (isMounted && projectsResponse?.success) {
-          setProjectRecommendations(projectsResponse.data || []);
-        } else {
-          setProjectRecommendations([]);
+        // Fetch student data and project recommendations in parallel
+        const [studentResponse, projectsResponse] = await Promise.all([
+          getStudentByUsername(username),
+          getProjectRecommendations(token, username)
+        ]);
+
+        if (isMounted) {
+          if (studentResponse?.success) {
+            setStudentInfo(studentResponse.data);
+            setSkills(studentResponse.data.skills || []);
+            setTechnologies(studentResponse.data.technologies || []);
+            setJobFields(studentResponse.data.appliedJobFields || []);
+          }
+
+          if (projectsResponse?.success) {
+            setProjectRecommendations(projectsResponse.data || []);
+          } else {
+            setProjectRecommendations([]);
+          }
         }
       } catch (error) {
-        console.error("Error fetching student data:", error);
+        console.error("Error fetching data:", error);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    fetchStudentData();
+    fetchData();
     return () => {
       isMounted = false;
     };
   }, [token]);
 
-  if (loading) return <div>Đang tải...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      <span className="ml-2 text-gray-600">Đang tải...</span>
+    </div>
+  );
   if (!studentInfo) return <div>Không tìm thấy ứng viên</div>;
 
   return (
