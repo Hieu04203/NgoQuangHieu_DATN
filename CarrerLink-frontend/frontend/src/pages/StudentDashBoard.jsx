@@ -9,6 +9,34 @@ import SkillProgress from "../components/studentDashboard/SkillProgress";
 import TechJobCard from "../components/studentDashboard/TechJobCard";
 import SuggestedProjects from "../components/Dashboard/StudentDashboard/SuggestedProjects";
 
+// Fake data for dashboard statistics
+const dashboardStats = {
+  appliedJobs: {
+    count: 15,
+    details: [
+      { company: "Tech Corp", position: "Frontend Developer", status: "Đang xét duyệt" },
+      { company: "Digital Solutions", position: "React Developer", status: "Phỏng vấn" },
+      { company: "Innovation Labs", position: "Web Developer", status: "Đã được chấp nhận" }
+    ]
+  },
+  viewedAds: {
+    count: 28,
+    details: [
+      { title: "Senior Web Developer", company: "Tech Giants", salary: "$3000-4000" },
+      { title: "Frontend Expert", company: "Digital Corp", salary: "$2500-3500" },
+      { title: "React Developer", company: "Software House", salary: "$2800-3800" }
+    ]
+  },
+  completedTests: {
+    count: 8,
+    details: [
+      { name: "JavaScript Advanced", score: 85, total: 100 },
+      { name: "React Fundamentals", score: 92, total: 100 },
+      { name: "Web Development", score: 88, total: 100 }
+    ]
+  }
+};
+
 const StudentDashboard = () => {
   const [studentInfo, setStudentInfo] = useState(null);
   const [skills, setSkills] = useState([]);
@@ -52,12 +80,12 @@ const StudentDashboard = () => {
           token,
           response?.data?.studentId
         );
-        console.log("Projects Response:", projectsResponse); // Log the project data
+        console.log("Projects Response:", projectsResponse);
 
         if (isMounted && projectsResponse?.success) {
           setProjectRecommendations(projectsResponse.data || []);
         } else {
-          setProjectRecommendations([]); // If no projects, set to empty array
+          setProjectRecommendations([]);
         }
       } catch (error) {
         console.error("Error fetching student data:", error);
@@ -126,19 +154,19 @@ const StudentDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-sm p-6 text-white">
               <h3 className="text-lg font-semibold">Việc làm ứng tuyển</h3>
-              <p className="text-3xl font-bold">...</p>
+              <p className="text-3xl font-bold">{dashboardStats.appliedJobs.count}</p>
               <p className="text-indigo-100">Đã nộp đơn</p>
             </div>
 
             <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
               <h3 className="text-lg font-semibold">Các quảng cáo đã xem</h3>
-              <p className="text-3xl font-bold">...</p>
+              <p className="text-3xl font-bold">{dashboardStats.viewedAds.count}</p>
               <p className="text-purple-100">Các quảng cáo đang hoạt động</p>
             </div>
 
             <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl shadow-sm p-6 text-white">
               <h3 className="text-lg font-semibold">Các bài TEST đã hoàn thành</h3>
-              <p className="text-3xl font-bold">...</p>
+              <p className="text-3xl font-bold">{dashboardStats.completedTests.count}</p>
               <p className="text-pink-100">Các bài TEST đã qua</p>
             </div>
           </div>

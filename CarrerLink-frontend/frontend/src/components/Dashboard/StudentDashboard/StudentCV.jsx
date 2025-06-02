@@ -62,42 +62,43 @@ function App() {
     const navigate = useNavigate();
     // Prepare API payload
     const prepareCVData = (formData) => ({
-        name: formData.personalInfo.name,
-        title: formData.personalInfo.title,
-        email: formData.personalInfo.email,
-        mobile: formData.personalInfo.phone,
-        address: formData.personalInfo.location,
-        githubLink: formData.personalInfo.github,
-        linkedinLink: formData.personalInfo.linkedin,
-        summary: formData.personalInfo.summary,
-        skills: transformTechnicalSkills(formData.technicalSkills),
-        projects: formData.projects.map(proj => ({
-            projectName: proj.name,
-            projectDescription: proj.description,
-            githubLink: proj.link
-        })),
-        experiences: formData.experience.map(exp => ({
-            jobTitle: exp.title,
-            companyName: exp.company,
-            startDate: exp.startDate,
-            endDate: exp.current ? null : exp.endDate,
-            description: exp.description
-        })),
-        educations: formData.education.map(edu => ({
-            degree: edu.degree,
-            institution: edu.institution,
-            location: edu.location,
-            startDate: edu.startDate,
-            endDate: edu.endDate,
-            gpa: edu.gpa,
-            description: edu.description
-        })),
-        certifications: formData.certificates.map(cert => ({
-            name: cert.name,
-            organization: cert.issuer,
-            issueDate: cert.date,
-            certificationLink: cert.link
-        }))
+        name: formData.personalInfo.name || '',
+        title: formData.personalInfo.title || '',
+        email: formData.personalInfo.email || '',
+        mobile: formData.personalInfo.phone || '',
+        address: formData.personalInfo.location || '',
+        githubLink: formData.personalInfo.github || '',
+        linkedinLink: formData.personalInfo.linkedin || '',
+        summary: formData.personalInfo.summary || '',
+        skills: formData.technicalSkills ? transformTechnicalSkills(formData.technicalSkills) : [],
+        projects: formData.projects ? formData.projects.map(proj => ({
+            projectName: proj.name || '',
+            projectDescription: proj.description || '',
+            githubLink: proj.link || ''
+        })) : [],
+        experiences: formData.experience ? formData.experience.map(exp => ({
+            jobTitle: exp.title || '',
+            companyName: exp.company || '',
+            startDate: exp.startDate || '',
+            endDate: exp.current ? null : (exp.endDate || ''),
+            description: exp.description || ''
+        })) : [],
+        educations: formData.education ? formData.education.map(edu => ({
+            degree: edu.degree || '',
+            institution: edu.institution || '',
+            location: edu.location || '',
+            startDate: edu.startDate || '',
+            endDate: edu.endDate || '',
+            gpa: edu.gpa || '',
+            description: edu.description || ''
+        })) : [],
+        certifications: formData.certificates ? formData.certificates.map(cert => ({
+            name: cert.name || '',
+            organization: cert.issuer || '',
+            issueDate: cert.date || '',
+            certificationLink: cert.link || ''
+        })) : [],
+        softSkills: formData.softSkills || []
     });
 
     const sections = [
@@ -149,14 +150,68 @@ function App() {
                         if (!res.ok) throw new Error(`Lỗi HTTP! trạng thái: ${res.status}`);
                         return res.json();
                     })
-                    .then((data) => {
-                        console.log("Raw data:", data);
-
+                    .then((cvData) => {
+                        console.log("Raw CV data:", cvData);
+                        if (cvData.data) {
+                            // Transform API data to match formData structure
+                            setFormData({
+                                personalInfo: {
+                                    name: cvData.data.name || '',
+                                    title: cvData.data.title || '',
+                                    email: cvData.data.email || '',
+                                    phone: cvData.data.mobile || '',
+                                    location: cvData.data.address || '',
+                                    summary: cvData.data.summary || '',
+                                    linkedin: cvData.data.linkedinLink || '',
+                                    github: cvData.data.githubLink || '',
+                                },
+                                experience: cvData.data.experiences?.map(exp => ({
+                                    id: crypto.randomUUID(),
+                                    title: exp.jobTitle || '',
+                                    company: exp.companyName || '',
+                                    startDate: exp.startDate || '',
+                                    endDate: exp.endDate || '',
+                                    current: !exp.endDate,
+                                    description: exp.description || ''
+                                })) || [],
+                                education: cvData.data.educations?.map(edu => ({
+                                    id: crypto.randomUUID(),
+                                    degree: edu.degree || '',
+                                    institution: edu.institution || '',
+                                    location: edu.location || '',
+                                    startDate: edu.startDate || '',
+                                    endDate: edu.endDate || '',
+                                    gpa: edu.gpa || '',
+                                    description: edu.description || ''
+                                })) || [],
+                                softSkills: cvData.data.softSkills || [],
+                                technicalSkills: {
+                                    frontend: cvData.data.skills?.filter(skill => skill.category === 'frontend').map(skill => skill.techSkill) || [],
+                                    backend: cvData.data.skills?.filter(skill => skill.category === 'backend').map(skill => skill.techSkill) || [],
+                                    languages: cvData.data.skills?.filter(skill => skill.category === 'languages').map(skill => skill.techSkill) || [],
+                                    tools: cvData.data.skills?.filter(skill => skill.category === 'tools').map(skill => skill.techSkill) || []
+                                },
+                                projects: cvData.data.projects?.map(proj => ({
+                                    id: crypto.randomUUID(),
+                                    name: proj.projectName || '',
+                                    description: proj.projectDescription || '',
+                                    link: proj.githubLink || ''
+                                })) || [],
+                                certificates: cvData.data.certifications?.map(cert => ({
+                                    id: crypto.randomUUID(),
+                                    name: cert.name || '',
+                                    issuer: cert.organization || '',
+                                    date: cert.issueDate || '',
+                                    link: cert.certificationLink || ''
+                                })) || [],
+                                extracurricular: [],
+                                references: []
+                            });
+                        }
                     })
-                    .catch((err) => console.error("Lỗi tải thông báo", err));
-
+                    .catch((err) => console.error("Lỗi tải CV", err));
             })
-            .catch((err) => console.error("Lỗi tải thông báo", err));
+            .catch((err) => console.error("Lỗi tải thông tin sinh viên", err));
     }, [token])
     const extractStudentIdFromToken = (token) => {
         try {
@@ -405,32 +460,45 @@ function App() {
 
     const handleSaveCV = async () => {
         if (!studentId) {
-            console.log('Không tìm thấy ID ứng viên');
+            sweetalert2.fire({
+                title: 'Lỗi',
+                text: 'Không tìm thấy ID sinh viên',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
             return;
         }
 
-
         try {
             const cvData = prepareCVData(formData);
-            console.log('CV Data:', cvData);
+            console.log('CV Data being sent:', cvData);
             const response = await SaveCV(studentId, cvData);
+            console.log('Response from SaveCV:', response);
 
-            if (response.data.success) {
+            if (response && response.data) {
                 sweetalert2.fire({
-                    title: 'Success',
-                    text: 'Đã lưu CV thành công!',
+                    title: 'Thành công',
+                    text: 'CV của bạn đã được lưu thành công!',
                     icon: 'success',
-
-                })
+                    showConfirmButton: true,
+                    confirmButtonText: 'Đóng',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end'
+                });
             } else {
-                throw new Error(response.data.message || 'Không lưu được CV');
+                throw new Error('Không lưu được CV');
             }
         } catch (error) {
-            console.error('Lỗi lưu CV', error);
-
-
-        };
-        // await axios.put(`/api/cv?studentId=${studentId}`, cvData);
+            console.error('Lỗi lưu CV:', error);
+            sweetalert2.fire({
+                title: 'Lỗi',
+                text: error.response?.data?.message || 'Có lỗi xảy ra khi lưu CV. Vui lòng thử lại!',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
+        }
     };
 
     const addReference = () => {
@@ -1356,7 +1424,7 @@ function App() {
                     {/* Preview Area */}
                     <div ref={previewRef} className="w-[800px] bg-gray-50 border-l p-8 overflow-y-auto">
                         <div className="bg-white shadow-lg p-8 min-h-[700px]">
-                            <h1 className="text-3xl font-bold text-blue-900">{formData.personalInfo.fullName || 'John Doe'}</h1>
+                            <h1 className="text-3xl font-bold text-blue-900">{formData.personalInfo.name || 'John Doe'}</h1>
                             <p className="text-lg text-blue-600 mb-4">{formData.personalInfo.title || 'Software Engineer'}</p>
 
                             <div className="flex items-center text-sm text-gray-600 space-x-4 mb-6">

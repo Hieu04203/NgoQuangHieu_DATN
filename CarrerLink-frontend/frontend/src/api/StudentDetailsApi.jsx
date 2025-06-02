@@ -121,10 +121,13 @@ const SaveCV = async (studentId, transformedCVData) => {
   try {
     const response = await axiosInstance.put(`/cv?studentId=${studentId}`, transformedCVData);
     console.log('Save successful:', response.data);
+    return response;
   } catch (error) {
     console.error('Save failed:', error);
+    throw error;
   }
 };
+
 const getCV = async (studentId) => {
   try {
     const response = await axiosInstance.get(`/cv/getCV?studentId=${studentId}`);

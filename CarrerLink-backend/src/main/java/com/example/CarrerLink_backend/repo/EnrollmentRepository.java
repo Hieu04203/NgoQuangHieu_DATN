@@ -1,5 +1,5 @@
 // EnrollmentRepository.java
-package com.example.CarrerLink_backend.repository;
+package com.example.CarrerLink_backend.repo;
 
 import com.example.CarrerLink_backend.entity.Enrollment;
 import org.springframework.data.jpa.repository.JpaRepository;

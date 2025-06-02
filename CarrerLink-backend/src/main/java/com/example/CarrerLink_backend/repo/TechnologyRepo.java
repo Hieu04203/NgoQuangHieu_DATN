@@ -3,7 +3,9 @@ package com.example.CarrerLink_backend.repo;
 import com.example.CarrerLink_backend.dto.TechnologyStudentCount;
 import com.example.CarrerLink_backend.entity.Technology;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +19,8 @@ public interface TechnologyRepo extends JpaRepository<Technology, Integer> {
 
     @Query("SELECT t FROM Technology t LEFT JOIN FETCH t.students")
     List<Technology> findAllWithStudents();
+
+    @Modifying
+    @Query("DELETE FROM TechnicalSkills t WHERE t.cv.id = :cvId")
+    void deleteAllByCvId(@Param("cvId") Integer cvId);
 }

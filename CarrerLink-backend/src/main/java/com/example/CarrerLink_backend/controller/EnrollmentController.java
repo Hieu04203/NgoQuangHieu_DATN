@@ -2,7 +2,7 @@
 package com.example.CarrerLink_backend.controller;
 
 import com.example.CarrerLink_backend.entity.Enrollment;
-import com.example.CarrerLink_backend.repository.EnrollmentRepository;
+import com.example.CarrerLink_backend.repo.EnrollmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
