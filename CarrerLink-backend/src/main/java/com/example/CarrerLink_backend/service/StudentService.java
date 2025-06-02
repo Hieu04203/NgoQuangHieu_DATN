@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface StudentService {
-    String saveStudent(StudentSaveRequestDTO studentSaveRequestDTO, UserEntity user);
+    String saveStudent(StudentSaveRequestDTO studentSaveRequestDTO, UserEntity user, MultipartFile imageFile) throws IOException;
 
 
 

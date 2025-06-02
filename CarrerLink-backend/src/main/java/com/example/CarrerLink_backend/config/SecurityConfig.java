@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 "/api/tests/**",
                                 "/api/enrollments/**",
                                 "/api/cv/**"
+//                                "/api/students/**"
                         ).permitAll()
 
                         // Public GET endpoints

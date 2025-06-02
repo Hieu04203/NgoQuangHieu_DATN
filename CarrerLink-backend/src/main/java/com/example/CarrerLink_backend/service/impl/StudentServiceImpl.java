@@ -71,23 +71,30 @@ private final AmazonS3 amazonS3;
     private SimpMessagingTemplate messagingTemplate;
     private final Cloudinary cloudinary;
 
-    @Override
-    @Transactional
-    public String saveStudent(StudentSaveRequestDTO studentSaveRequestDTO,UserEntity user) {
-
-        Student student = modelMapper.map(studentSaveRequestDTO,Student.class);
+    public String saveStudent(StudentSaveRequestDTO studentSaveRequestDTO, UserEntity user, MultipartFile imageFile) throws IOException {
+        Student student = modelMapper.map(studentSaveRequestDTO, Student.class);
         student.setUser(user);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = uploadImageToCloudinary(imageFile);
+            student.setProfilePicUrl(imageUrl);
+        }
+
         CV cv = new CV();
         cv.setStudent(student);
         student.setCv(cv);
-        saveJobFields(studentSaveRequestDTO,student);
-        saveTechnologies(studentSaveRequestDTO,student);
-        saveAcedemicResults(studentSaveRequestDTO,student);
+
+        saveJobFields(studentSaveRequestDTO, student);
+        saveTechnologies(studentSaveRequestDTO, student);
+        saveAcedemicResults(studentSaveRequestDTO, student);
+
         Student savedStudent = studentRepo.save(student);
 
         skillAnalysisService.saveSkillsFromAcedemicResults(savedStudent);
+
         return "Student saved successfully with ID: " + savedStudent.getStudentId();
     }
+
 
     public void saveJobFields(StudentSaveRequestDTO dto, Student student) {
         if (dto.getJobFields() != null) {

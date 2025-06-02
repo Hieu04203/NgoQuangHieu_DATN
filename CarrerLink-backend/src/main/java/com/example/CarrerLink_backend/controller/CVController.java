@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/cv")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
+
 public class CVController {
 
     private final CVService cvService;

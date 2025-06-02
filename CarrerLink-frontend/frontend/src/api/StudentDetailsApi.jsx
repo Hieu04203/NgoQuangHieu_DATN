@@ -62,7 +62,7 @@ const getRecommendedCourses = async (studentId) => {
     }
 
     const response = await axiosInstance.get(
-        `students/recommend-courses?studentId=${studentId}`
+      `students/recommend-courses?studentId=${studentId}`
     );
 
     if (!response.data?.success) {
@@ -117,7 +117,7 @@ const getProjectRecommendations = async (token, studentId) => {
   }
 };
 
-const SaveCV = async (studentId,transformedCVData) => {
+const SaveCV = async (studentId, transformedCVData) => {
   try {
     const response = await axiosInstance.put(`/cv?studentId=${studentId}`, transformedCVData);
     console.log('Save successful:', response.data);
@@ -127,7 +127,7 @@ const SaveCV = async (studentId,transformedCVData) => {
 };
 const getCV = async (studentId) => {
   try {
-    const response = await axiosInstance.get(`/cv?studentId=${studentId}`);
+    const response = await axiosInstance.get(`/cv/getCV?studentId=${studentId}`);
     console.log('CV fetched successfully:', response.data);
     return response.data;
 

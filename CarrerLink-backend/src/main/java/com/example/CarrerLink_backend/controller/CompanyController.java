@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,19 +101,17 @@ public class CompanyController {
                 .body(new StandardResponse(true, "Company saved successfully", savedCompany));
     }
 
-    // Update an existing company
-    @PutMapping(consumes = {"multipart/form-data"})
-    @Operation(summary = "Update a company")
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Cập nhật công ty")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Company updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Company not found"),
+            @ApiResponse(responseCode = "200", description = "Công ty đã cập nhật thành công"),
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<StandardResponse> updateCompany(
             @RequestPart("company") String companyJson,
             @RequestPart(value = "companyImage", required = false) MultipartFile companyImage,
-            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) {
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImage) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         CompanyUpdateRequestDTO companyUpdateRequestDTO;
@@ -122,17 +121,10 @@ public class CompanyController {
             return ResponseEntity.badRequest().body(new StandardResponse(false, "Invalid JSON format", null));
         }
 
-        try {
-            System.out.println("Company Image: " + (companyImage != null ? companyImage.getOriginalFilename() : "null"));
-            System.out.println("Cover Image: " + (coverImage != null ? coverImage.getOriginalFilename() : "null"));
-
-            String result = companyService.updateCompany(companyUpdateRequestDTO, companyImage, coverImage);
-            return ResponseEntity.ok(new StandardResponse(true, "Company updated successfully", result));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new StandardResponse(false, "Error uploading images: " + e.getMessage(), null));
-        }
+        String message = companyService.updateCompany(companyUpdateRequestDTO, companyImage, coverImage);
+        return ResponseEntity.ok(new StandardResponse(true, "Công ty đã cập nhật thành công", message));
     }
+
 
 
 

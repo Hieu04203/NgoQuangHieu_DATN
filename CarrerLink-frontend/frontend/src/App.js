@@ -123,14 +123,16 @@ const router = createBrowserRouter([
     element: <RecommendedJobs />
   },
   {
-
+    path: '/student-dashboard/viewcv/:studentId',
+    element: <ViewCV />
+  },
+  {
     path: "/student-dashboard/courses",
     element: <RecommendedCourses />,
   },
 
   { path: "/editprofile", element: <EditProfile /> },
   { path: "student-dashboard/cv", element: <StudentCV /> },
-  { path: "/student-dashboard/viewcv/:studentId", element: <ViewCV /> },
 ]);
 
 function App() {

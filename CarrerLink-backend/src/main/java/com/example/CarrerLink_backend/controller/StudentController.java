@@ -9,14 +9,17 @@ import com.example.CarrerLink_backend.dto.request.ApplyJobRequestDTO;
 import com.example.CarrerLink_backend.dto.request.StudentSaveRequestDTO;
 import com.example.CarrerLink_backend.dto.request.StudentUpdateRequestDTO;
 import com.example.CarrerLink_backend.dto.response.ApplyJobResponseDTO;
+import com.example.CarrerLink_backend.dto.response.RegisterResponseDTO;
 import com.example.CarrerLink_backend.dto.response.StudentgetResponseDTO;
 import com.example.CarrerLink_backend.entity.Student;
 import com.example.CarrerLink_backend.entity.UserEntity;
 import com.example.CarrerLink_backend.repo.StudentRepo;
+import com.example.CarrerLink_backend.repo.SubmissionRepository;
 import com.example.CarrerLink_backend.service.CourseRecommendationService;
 import com.example.CarrerLink_backend.service.JobService;
 import com.example.CarrerLink_backend.service.ProjectRecommendationService;
 import com.example.CarrerLink_backend.service.StudentService;
+import com.example.CarrerLink_backend.service.impl.AuthService;
 import com.example.CarrerLink_backend.service.impl.CountBroadcastService;
 import com.example.CarrerLink_backend.service.impl.CourseRecommendationServiceImpl;
 import com.example.CarrerLink_backend.service.impl.JobRecommendationServiceImpl;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/students")
@@ -51,21 +56,42 @@ public class StudentController {
     private final ProjectRecommendationService projectRecommendationService;
     private final CountBroadcastService countBroadcastService;
     private final JobService jobService;
-    @Operation(summary = "Lưu ứng viên")
+    private final AuthService authService;
+    private final SubmissionRepository submissionRepository;
+
+    @Operation(summary = "Lưu ứng viên",
+            description = "Tạo mới một ứng viên kèm ảnh đại diện (tùy chọn)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Ứng viên đã tạo thành công"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "400", description = "Dữ liệu đầu vào không hợp lệ"),
+            @ApiResponse(responseCode = "500", description = "Lỗi máy chủ nội bộ")
     })
-    @PostMapping
-    public ResponseEntity<StandardResponse> saveStudent(@RequestBody StudentSaveRequestDTO studentSaveRequestDTO, UserEntity user){
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RegisterResponseDTO> registerStudent(
+            @RequestPart("student") String studentJson,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile
+    ) throws IOException, IllegalAccessException {
 
-        String message = studentService.saveStudent(studentSaveRequestDTO,user);
-        countBroadcastService.broadcastChartUpdates();
-        return ResponseEntity.status(201)
-                .body(new StandardResponse(true, "Company saved successfully", message));
+        ObjectMapper objectMapper = new ObjectMapper();
+        StudentSaveRequestDTO studentSaveRequestDTO;
+        try {
+            studentSaveRequestDTO = objectMapper.readValue(studentJson, StudentSaveRequestDTO.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest()
+                    .body(new RegisterResponseDTO(null, "Invalid JSON format"));
+        }
 
+        RegisterResponseDTO res = authService.registerStudent(studentSaveRequestDTO, imageFile);
+
+        if (res.getError() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
+
+
+
 
     @PutMapping(consumes = {"multipart/form-data"})
     @Operation(summary = "Cập nhật ứng viên")
@@ -212,6 +238,21 @@ public class StudentController {
         return ResponseEntity.ok(new StandardResponse(true, "Student approved successfully", message));
 
     }
+
+    @GetMapping("/dashboard-counts")
+    public ResponseEntity<StandardResponse> getDashboardCounts(@RequestParam Long studentId) {
+        Map<String, Long> counts = new HashMap<>();
+
+//        long totalJobsApplied = studentService.countAllJobsApplied();
+        long totalTestsDone = submissionRepository.countByStudentId(studentId);
+
+//        counts.put("totalJobsApplied", totalJobsApplied);
+        counts.put("totalTestsDone", totalTestsDone);
+
+
+        return ResponseEntity.ok(new StandardResponse(true, "Dashboard counts", counts));
+    }
+
 
 
 }

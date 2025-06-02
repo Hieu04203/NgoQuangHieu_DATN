@@ -1,6 +1,8 @@
 package com.example.CarrerLink_backend.service.impl;
 
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.CarrerLink_backend.config.CompanyRegisteredEvent;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -40,6 +42,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -61,6 +64,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final AmazonS3 amazonS3;
     private final  FileServiceImpl fileService;
     private final EmailService emailService;
+    private final Cloudinary cloudinary;
 
 //    private  ApplicationEventPublisher eventPublisher;
 //    private  SimpMessagingTemplate messagingTemplate;
@@ -105,23 +109,29 @@ public class CompanyServiceImpl implements CompanyService {
         return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {}.getType());
     }
 
-    @Override
-    public String saveCompany(CompanySaveRequestDTO companySaveRequestDTO,UserEntity user) {
-        if (companySaveRequestDTO.getName() == null || companySaveRequestDTO.getLocation() == null) {
-            throw new InvalidInputException("Company name and location are required.");
-        }
-        if (companyRepository.findByName(companySaveRequestDTO.getName()).isPresent()) {
-            throw new DuplicateResourceException("Company with the name " + companySaveRequestDTO.getName() + " already exists.");
-        }
-        Company company = modelMapper.map(companySaveRequestDTO, Company.class);
-        company.setUser(user);
-        Company savedCompany = companyRepository.save(company);
+    public String saveCompany(CompanySaveRequestDTO dto, UserEntity user) {
+        Company company = new Company();
 
-//        eventPublisher.publishEvent(new CompanyRegisteredEvent(this, savedCompany));
-        return "Company saved successfully";
+        company.setName(dto.getName());
+        company.setDescription(dto.getDescription());
+        company.setCategory(dto.getCategory());
+        company.setMobile(dto.getMobile());
+        company.setLocation(dto.getLocation());
+        company.setCoverImage(dto.getCoverImage());
+        company.setEmail(dto.getEmail());
+        company.setRequirements(dto.getRequirements());
+        company.setWebsite(dto.getWebsite());
+        company.setSize(dto.getSize());
+        company.setCompanyPicUrl(dto.getCompanyPicUrl());
+        company.setCoverPicUrl(dto.getCoverPicUrl());
+
+        company.setUser(user);
+
+        companyRepository.save(company);
+
+        return company.getId().toString();
     }
 
-    @Override
     @Transactional
     public String updateCompany(CompanyUpdateRequestDTO dto, MultipartFile companyImage, MultipartFile coverImage) throws IOException {
         if (dto.getId() == null) {
@@ -131,6 +141,7 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found for ID: " + dto.getId()));
 
+        // Cập nhật thông tin cơ bản
         company.setName(dto.getName());
         company.setLocation(dto.getLocation());
         company.setCategory(dto.getCategory());
@@ -141,20 +152,29 @@ public class CompanyServiceImpl implements CompanyService {
         company.setWebsite(dto.getWebsite());
         company.setRequirements(dto.getRequirements());
 
-
-
+        // Xử lý upload ảnh companyImage
         if (companyImage != null && !companyImage.isEmpty()) {
-            company.setCompanyPicUrl(saveCompanyImageFile(company.getId(), companyImage, "company_image"));
-
+            String companyImageUrl = uploadImageToCloudinary(companyImage, "companies/" + company.getId() + "/company_image");
+            company.setCompanyPicUrl(companyImageUrl);
         }
 
+        // Xử lý upload ảnh coverImage
         if (coverImage != null && !coverImage.isEmpty()) {
-            company.setCoverPicUrl(saveCompanyImageFile(company.getId(), coverImage, "cover_image"));
+            String coverImageUrl = uploadImageToCloudinary(coverImage, "companies/" + company.getId() + "/cover_image");
+            company.setCoverPicUrl(coverImageUrl);
         }
+
         companyRepository.save(company);
 
-        return "Updated successfully";
+        return "Company updated successfully with ID: " + company.getId();
     }
+
+    private String uploadImageToCloudinary(MultipartFile file, String folderPath) throws IOException {
+        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("folder", folderPath));
+        return uploadResult.get("secure_url").toString();
+    }
+
 
 
     public String saveCompanyImageFile(long companyId, MultipartFile file, String imageType) {
@@ -265,6 +285,7 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyRepository.findByUser_Id(userId).orElseThrow(()->new RuntimeException("Company not found"));
         return modelMapper.map(company, CompanygetResponseDTO.class);
     }
+
 
     @Override
     public String approveJob(int studentId,int jobId,JobApproveResponseDTO jobApproveResponseDTO) {

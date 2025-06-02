@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     Optional<Submission> findByStudentIdAndTestId(Long studentId, Long testId);
+
+    long countByStudentId(Long studentId);
 }

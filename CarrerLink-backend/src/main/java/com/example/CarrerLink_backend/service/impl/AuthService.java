@@ -1,6 +1,8 @@
 package com.example.CarrerLink_backend.service.impl;
 
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.CarrerLink_backend.dto.AdminSaveRequestDTO;
 import com.example.CarrerLink_backend.dto.request.*;
 import com.example.CarrerLink_backend.dto.response.LoginResponseDTO;
@@ -24,7 +26,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +51,7 @@ public class AuthService {
     private final CompanyService companyService;
     private final AdminService adminService;
     private final JavaMailSender mailSender;
+    private final Cloudinary cloudinary;
 
     public List<UserEntity> getAllUsers(){
         return userRepo.findAll();
@@ -97,44 +102,74 @@ public class AuthService {
 //        if(userData.getId() == 0) return new RegisterResponseDTO(null,"system error");
 //        return new RegisterResponseDTO(String.format("user registers at %s",userData.getId()),null);
 //    }
-    @Transactional
-    public RegisterResponseDTO registerStudent(StudentSaveRequestDTO studentSaveRequestDTO) throws IllegalAccessException {
-        if(Boolean.TRUE.equals(isUserEnable(studentSaveRequestDTO.getUserSaveRequestDTO().getUsername()))) {
-            throw new IllegalAccessException("User already exists in the System");
-        }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setName(studentSaveRequestDTO.getFirstName()+" "+studentSaveRequestDTO.getLastName());
-        userEntity.setEmail(studentSaveRequestDTO.getEmail());
-        userEntity.setUsername(studentSaveRequestDTO.getUserSaveRequestDTO().getUsername());
-        userEntity.setPassword(passwordEncoder.encode(studentSaveRequestDTO.getUserSaveRequestDTO().getPassword()));
-        RolesEntity studentRole = roleRepo.findByName("ROLE_STUDENT").orElseThrow(() ->new RuntimeException("Role not found"));
-        userEntity.setRole(studentRole.getName());
-        UserEntity userData = userRepo.save(userEntity);
-        studentService.saveStudent(studentSaveRequestDTO,userData);
+@Transactional
+public RegisterResponseDTO registerStudent(StudentSaveRequestDTO studentSaveRequestDTO, MultipartFile imageFile)
+        throws IllegalAccessException, IOException {
 
-
-        if(userData.getId() == 0) return new RegisterResponseDTO(null,"system error");
-        return new RegisterResponseDTO(String.format("user registers at %s",userData.getId()),null);
+    if (Boolean.TRUE.equals(isUserEnable(studentSaveRequestDTO.getUserSaveRequestDTO().getUsername()))) {
+        throw new IllegalAccessException("User already exists in the System");
     }
+
+    UserEntity userEntity = new UserEntity();
+    userEntity.setName(studentSaveRequestDTO.getFirstName() + " " + studentSaveRequestDTO.getLastName());
+    userEntity.setEmail(studentSaveRequestDTO.getEmail());
+    userEntity.setUsername(studentSaveRequestDTO.getUserSaveRequestDTO().getUsername());
+    userEntity.setPassword(passwordEncoder.encode(studentSaveRequestDTO.getUserSaveRequestDTO().getPassword()));
+
+    RolesEntity studentRole = roleRepo.findByName("ROLE_STUDENT")
+            .orElseThrow(() -> new RuntimeException("Role not found"));
+    userEntity.setRole(studentRole.getName());
+
+    UserEntity userData = userRepo.save(userEntity);
+
+    studentService.saveStudent(studentSaveRequestDTO, userData, imageFile);
+
+    if (userData.getId() == 0) return new RegisterResponseDTO(null, "system error");
+    return new RegisterResponseDTO("user registers at " + userData.getId(), null);
+}
+
+
+
+
+
     @Transactional
-    public RegisterResponseDTO registerCompany(CompanySaveRequestDTO companySaveRequestDTO) throws IllegalAccessException {
-        if(Boolean.TRUE.equals(isUserEnable(companySaveRequestDTO.getUserSaveRequestDTO().getUsername()))) {
+    public RegisterResponseDTO registerCompany(CompanySaveRequestDTO companySaveRequestDTO, MultipartFile companyPic, MultipartFile coverPic) throws IllegalAccessException, IOException {
+        if (Boolean.TRUE.equals(isUserEnable(companySaveRequestDTO.getUserSaveRequestDTO().getUsername()))) {
             throw new IllegalAccessException("User already exists in the System");
         }
+
         UserEntity userEntity = new UserEntity();
         userEntity.setName(companySaveRequestDTO.getName());
         userEntity.setEmail(companySaveRequestDTO.getEmail());
         userEntity.setUsername(companySaveRequestDTO.getUserSaveRequestDTO().getUsername());
         userEntity.setPassword(passwordEncoder.encode(companySaveRequestDTO.getUserSaveRequestDTO().getPassword()));
-        RolesEntity companyRole = roleRepo.findByName("ROLE_COMPANY").orElseThrow(()->new RuntimeException("Role not found"));
+        RolesEntity companyRole = roleRepo.findByName("ROLE_COMPANY").orElseThrow(() -> new RuntimeException("Role not found"));
         userEntity.setRole(companyRole.getName());
         UserEntity userData = userRepo.save(userEntity);
-        companyService.saveCompany(companySaveRequestDTO,userData);
 
+        // Upload ảnh lên cloudinary
+        if (companyPic != null && !companyPic.isEmpty()) {
+            String companyPicUrl = uploadImageToCloudinary(companyPic);
+            companySaveRequestDTO.setCompanyPicUrl(companyPicUrl);
+        }
+        if (coverPic != null && !coverPic.isEmpty()) {
+            String coverPicUrl = uploadImageToCloudinary(coverPic);
+            companySaveRequestDTO.setCoverPicUrl(coverPicUrl);
+        }
 
-        if(userData.getId() == 0) return new RegisterResponseDTO(null,"system error");
-        return new RegisterResponseDTO(String.format("user registers at %s",userData.getId()),null);
+        companyService.saveCompany(companySaveRequestDTO, userData);
+
+        if (userData.getId() == 0) return new RegisterResponseDTO(null, "system error");
+        return new RegisterResponseDTO(String.format("user registers at %s", userData.getId()), null);
     }
+
+    private String uploadImageToCloudinary(MultipartFile file) throws IOException {
+        Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("folder", "students"));
+        return uploadResult.get("secure_url").toString();
+    }
+
+
 
     public RegisterResponseDTO registerAdmin(AdminSaveRequestDTO adminSaveRequestDTO) throws IllegalAccessException {
 
