@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import {
     LayoutDashboard,
     Briefcase,
@@ -11,7 +11,7 @@ import {
     ContactRound,
 } from 'lucide-react';
 import { AuthContext } from "../../../api/AuthProvider";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Building } from 'lucide-react';
 const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
@@ -31,112 +31,103 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
                 <nav className="space-y-2">
                     <button
                         onClick={() => setActiveTab('dashboard')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'dashboard'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'dashboard'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <LayoutDashboard size={20} className="mr-3"/>
+                        <LayoutDashboard size={20} className="mr-3" />
                         <span className="font-medium">Dashboard</span>
-                        {activeTab === 'dashboard' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'dashboard' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('students')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'students'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'students'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <ContactRound size={20} className="mr-3"/>
+                        <ContactRound size={20} className="mr-3" />
                         <span className="font-medium">Ứng Viên</span>
-                        {activeTab === 'students' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'students' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('technologies')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'technologies'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'technologies'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <Cpu size={20} className="mr-3"/>
+                        <Cpu size={20} className="mr-3" />
                         <span className="font-medium">Công Nghệ</span>
-                        {activeTab === 'technologies' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'technologies' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('Courses')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'Courses'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'Courses'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <FilePen size={20} className="mr-3"/>
+                        <FilePen size={20} className="mr-3" />
                         <span className="font-medium">Quảng cáo</span>
-                        {activeTab === 'Courses' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'Courses' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('jobs')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'jobs'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'jobs'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <Briefcase size={20} className="mr-3"/>
+                        <Briefcase size={20} className="mr-3" />
                         <span className="font-medium">Lĩnh vực</span>
-                        {activeTab === 'jobs' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'jobs' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('cvs')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'cvs'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'cvs'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <FileCheck size={20} className="mr-3"/>
-                        <span className="font-medium">Phê duyệt CV</span>
-                        {activeTab === 'cvs' && <ChevronRight className="ml-auto" size={18}/>}
+                        <FileCheck size={20} className="mr-3" />
+                        <span className="font-medium">Ứng viên</span>
+                        {activeTab === 'cvs' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('tests')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'tests'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'tests'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <Calendar size={20} className="mr-3"/>
+                        <Calendar size={20} className="mr-3" />
                         <span className="font-medium">Test</span>
-                        {activeTab === 'tests' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'tests' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     <button
                         onClick={() => setActiveTab('companies')}
-                        className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                            activeTab === 'companies'
-                                ? 'bg-indigo-50 text-indigo-600'
-                                : 'text-gray-600 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'companies'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
                     >
-                        <Building size={20} className="mr-3"/>
+                        <Building size={20} className="mr-3" />
                         <span className="font-medium">Công ty</span>
-                        {activeTab === 'companies' && <ChevronRight className="ml-auto" size={18}/>}
+                        {activeTab === 'companies' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
                     {userRole === "ROLE_SUPERADMIN" && (<button
-                            onClick={() => setActiveTab('adminlist')}
-                            className={`flex items-center w-full p-3 rounded-xl transition-all ${
-                                activeTab === 'adminlist'
-                                    ? 'bg-indigo-50 text-indigo-600'
-                                    : 'text-gray-600 hover:bg-gray-50'
+                        onClick={() => setActiveTab('adminlist')}
+                        className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'adminlist'
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
                             }`}
-                        >
-                            <Calendar size={20} className="mr-3"/>
-                            <span className="font-medium">Quản trị viên</span>
-                            {activeTab === 'adminlist' && <ChevronRight className="ml-auto" size={18}/>}
-                        </button>
+                    >
+                        <Calendar size={20} className="mr-3" />
+                        <span className="font-medium">Quản trị viên</span>
+                        {activeTab === 'adminlist' && <ChevronRight className="ml-auto" size={18} />}
+                    </button>
                     )}
                 </nav>
             </div>
@@ -148,7 +139,7 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
                 <button
                     onClick={handleLogout}
                     className="flex items-center w-full p-3 text-gray-600 hover:bg-gray-50 rounded-xl">
-                    <LogOut size={20} className="mr-3"/>
+                    <LogOut size={20} className="mr-3" />
                     <span className="font-medium">Đăng xuất</span>
                 </button>
             </div>
