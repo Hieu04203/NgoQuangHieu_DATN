@@ -40,7 +40,7 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
                         <span className="font-medium">Dashboard</span>
                         {activeTab === 'dashboard' && <ChevronRight className="ml-auto" size={18} />}
                     </button>
-                    <button
+                    {/* <button
                         onClick={() => setActiveTab('students')}
                         className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'students'
                             ? 'bg-indigo-50 text-indigo-600'
@@ -50,7 +50,7 @@ const Sidebar = ({ activeTab, setActiveTab, userRole }) => {
                         <ContactRound size={20} className="mr-3" />
                         <span className="font-medium">Ứng Viên</span>
                         {activeTab === 'students' && <ChevronRight className="ml-auto" size={18} />}
-                    </button>
+                    </button> */}
                     <button
                         onClick={() => setActiveTab('technologies')}
                         className={`flex items-center w-full p-3 rounded-xl transition-all ${activeTab === 'technologies'
