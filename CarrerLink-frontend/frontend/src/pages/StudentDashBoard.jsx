@@ -9,6 +9,7 @@ import SkillProgress from "../components/studentDashboard/SkillProgress";
 import TechJobCard from "../components/studentDashboard/TechJobCard";
 import SuggestedProjects from "../components/Dashboard/StudentDashboard/SuggestedProjects";
 import { Loader2 } from "lucide-react";
+import { mockProjects } from "../data/mockProjects";
 
 // Fake data for dashboard statistics
 const dashboardStats = {
@@ -43,9 +44,8 @@ const StudentDashboard = () => {
   const [skills, setSkills] = useState([]);
   const [technologies, setTechnologies] = useState([]);
   const [jobFields, setJobFields] = useState([]);
-  const [projectRecommendations, setProjectRecommendations] = useState([]);
-  const { token } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+  const { token } = useContext(AuthContext);
 
   // Extract username (or userId) from the JWT token
   const extractUsernameFromToken = (token) => {
@@ -70,11 +70,8 @@ const StudentDashboard = () => {
         const username = extractUsernameFromToken(token);
         if (!username) return;
 
-        // Fetch student data and project recommendations in parallel
-        const [studentResponse, projectsResponse] = await Promise.all([
-          getStudentByUsername(username),
-          getProjectRecommendations(token, username)
-        ]);
+        // Fetch student data
+        const studentResponse = await getStudentByUsername(username);
 
         if (isMounted) {
           if (studentResponse?.success) {
@@ -82,12 +79,6 @@ const StudentDashboard = () => {
             setSkills(studentResponse.data.skills || []);
             setTechnologies(studentResponse.data.technologies || []);
             setJobFields(studentResponse.data.appliedJobFields || []);
-          }
-
-          if (projectsResponse?.success) {
-            setProjectRecommendations(projectsResponse.data || []);
-          } else {
-            setProjectRecommendations([]);
           }
         }
       } catch (error) {
@@ -191,7 +182,7 @@ const StudentDashboard = () => {
             <SkillProgress student={studentInfo} />
           </div>
           <div className="lg:w-2/3">
-            <SuggestedProjects projects={projectRecommendations} />
+            <SuggestedProjects projects={mockProjects} />
           </div>
         </div>
       </div>
