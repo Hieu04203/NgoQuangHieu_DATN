@@ -1,5 +1,5 @@
 import axiosInstance from './AxiosInstance';
-import {ApproveJob} from "./CompanyDetailsGetApi";// const getCompanyDetailsById = async (companyId) => {
+import { ApproveJob } from "./CompanyDetailsGetApi";// const getCompanyDetailsById = async (companyId) => {
 //     try {
 //         const response = await axiosInstance.get(`/companies/${companyId}`);
 //
@@ -70,4 +70,19 @@ const approveCompany = async (companyId) => {
         throw error;
     }
 };
-export {  getCompanyDetailsByUsername,updateCompany,getAllCompanies,approveCompany };
+
+// Add this to get company statistics
+const getCompanyStatistics = async (companyId) => {
+    // Fake data - không cần gọi API thật
+    return {
+        success: true,
+        data: {
+            activeJobs: 15,
+            totalApplicants: 156,
+            interviewScheduled: 23,
+            hired: 8
+        }
+    };
+};
+
+export { getCompanyDetailsByUsername, updateCompany, getAllCompanies, approveCompany, getCompanyStatistics };

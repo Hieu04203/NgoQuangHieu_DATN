@@ -1,13 +1,12 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from '../../../api/AuthProvider';
-import { useContext } from "react";
 import ContactEmployee from "./ContactEmployee";
 import FeaturesAndPartners from "./FeaturesAndPartners";
 import Applications from "./Applications";
-import { getCompanyDetailsByUsername} from "../../../api/CompanyDetailsApi";
-import {getApprovedApplicants} from "../../../api/CompanyDetailsGetApi";
+import { getCompanyDetailsByUsername, getCompanyStatistics } from "../../../api/CompanyDetailsApi";
+import { getApprovedApplicants } from "../../../api/CompanyDetailsGetApi";
 import JobVacancies from "./JobVacancies";
+import StatisticsChart from "./StatisticsChart";
 import {
   Users,
   Briefcase,
@@ -31,16 +30,21 @@ import {
 import CompanyHeader from "../../companyDashboard/CompanyHeader";
 import JobPostForm from "./JobPostForm";
 import JobCard from "./JobCard";
-import {getAllJobsByCompany} from "../../../api/JobDetailsApi";
+import { getAllJobsByCompany } from "../../../api/JobDetailsApi";
 
 function CompanyDashboard() {
   const { token } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
-
   const [selectedTab, setSelectedTab] = useState("dashboard");
   const [approvedapplicant, setApproved] = useState([{}]);
-  const[company,setCompany] = useState({});
-  const [companyJobs,setCompanyJobs] = useState([]);
+  const [company, setCompany] = useState({});
+  const [companyJobs, setCompanyJobs] = useState([]);
+  const [statistics, setStatistics] = useState({
+    activeJobs: 0,
+    totalApplicants: 0,
+    interviewScheduled: 0,
+    hired: 0
+  });
 
   const applicants = [
     {
@@ -69,13 +73,13 @@ function CompanyDashboard() {
     logo: "https://images.unsplash.com/photo-1496200186974-4293800e2c20?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     coverImage:
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80",
-      description:
+    description:
       "TechBridge Solutions is a pioneering platform dedicated to bridging the gap between talented undergraduates and innovative companies. We leverage cutting-edge technology to analyze student strengths, recommend skill improvements, and facilitate meaningful connections with employers. Our mission is to empower the next generation of professionals while helping companies find their perfect match.",
     technologies: [
-      {  items: ["React", "TypeScript", "Tailwind CSS"] },
-      {  items: ["Node.js", "Express", "Python"] },
-      {  items: ["PostgreSQL", "MongoDB", "Redis"] },
-      {  items: ["AWS", "Docker", "Kubernetes"] },
+      { items: ["React", "TypeScript", "Tailwind CSS"] },
+      { items: ["Node.js", "Express", "Python"] },
+      { items: ["PostgreSQL", "MongoDB", "Redis"] },
+      { items: ["AWS", "Docker", "Kubernetes"] },
     ],
     features: [
       {
@@ -117,7 +121,7 @@ function CompanyDashboard() {
       },
     ],
   };
-//--------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------
   const extractUsernameFromToken = (token) => {
     try {
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
@@ -127,8 +131,6 @@ function CompanyDashboard() {
       return null;
     }
   };
-
-
 
   const fetchCompanyJobs = async () => {
     try {
@@ -168,6 +170,12 @@ function CompanyDashboard() {
               setApproved(approvedResponse.data);
             }
           }
+
+          // Fetch statistics after getting company data
+          const statsResponse = await getCompanyStatistics(companyResponse.data.id);
+          if (isMounted && statsResponse?.success) {
+            setStatistics(statsResponse.data);
+          }
         }
       } catch (error) {
         console.error('Lỗi khi lấy dữ liệu', error);
@@ -186,10 +194,7 @@ function CompanyDashboard() {
   console.log(company);
   // if (!studentInfo) return <div>Student not found</div>;
 
-//---------------------------------------------------------------------------------------------------------------
-
-
-
+  //---------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -208,11 +213,10 @@ function CompanyDashboard() {
               <button
                 key={item.id}
                 onClick={() => setSelectedTab(item.id)}
-                className={`flex items-center px-1 py-4 text-sm font-medium border-b-2 ${
-                  selectedTab === item.id
-                    ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                className={`flex items-center px-1 py-4 text-sm font-medium border-b-2 ${selectedTab === item.id
+                  ? "border-indigo-600 text-indigo-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
               >
                 <item.icon className="h-5 w-5 mr-2" />
                 {item.name}
@@ -232,7 +236,7 @@ function CompanyDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-600">Việc làm đang hoạt động</p>
-                    <p className="text-2xl font-bold">...</p>
+                    <p className="text-2xl font-bold">{statistics.activeJobs}</p>
                   </div>
                   <Briefcase className="h-8 w-8 text-indigo-600" />
                 </div>
@@ -241,7 +245,7 @@ function CompanyDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-600">Tổng số ứng viên</p>
-                    <p className="text-2xl font-bold">...</p>
+                    <p className="text-2xl font-bold">{statistics.totalApplicants}</p>
                   </div>
                   <Users className="h-8 w-8 text-indigo-600" />
                 </div>
@@ -250,7 +254,7 @@ function CompanyDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-600">Phỏng vấn</p>
-                    <p className="text-2xl font-bold">...</p>
+                    <p className="text-2xl font-bold">{statistics.interviewScheduled}</p>
                   </div>
                   <Building2 className="h-8 w-8 text-indigo-600" />
                 </div>
@@ -259,7 +263,7 @@ function CompanyDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-600">Đã thuê</p>
-                    <p className="text-2xl font-bold">...</p>
+                    <p className="text-2xl font-bold">{statistics.hired}</p>
                   </div>
                   <ChartBar className="h-8 w-8 text-indigo-600" />
                 </div>
@@ -270,7 +274,7 @@ function CompanyDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">
-                Ứng viên gần đây
+                  Ứng viên gần đây
                 </h2>
                 <div className="space-y-4 max-h-60 overflow-y-auto">
                   {approvedapplicant.map((applicant) => (
@@ -280,9 +284,9 @@ function CompanyDashboard() {
                     >
                       <div className="flex items-center gap-3">
                         <img
-                            src={applicant.image}
-                            alt={applicant.firstName}
-                            className="w-10 h-10 rounded-full"
+                          src={applicant.image}
+                          alt={applicant.firstName}
+                          className="w-10 h-10 rounded-full"
                         />
                         <div>
                           <p className="font-medium">{applicant.firstName}</p>
@@ -299,7 +303,7 @@ function CompanyDashboard() {
                         </div>
                       </div>
                       <span className="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-sm">
-                      Đã lên lịch phỏng vấn
+                        Đã lên lịch phỏng vấn
                       </span>
                     </div>
                   ))}
@@ -308,13 +312,9 @@ function CompanyDashboard() {
 
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">
-                Thống kê ứng viên
+                  Thống kê ứng viên
                 </h2>
-                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-500">
-                  Biểu đồ thống kê sẽ được hiển thị ở đây
-                  </p>
-                </div>
+                <StatisticsChart />
               </div>
             </div>
           </div>
@@ -322,7 +322,7 @@ function CompanyDashboard() {
         {/*//--------------------------Job vacancy section ----------------------------------*/}
         {selectedTab === "jobs" && (
 
-          <JobVacancies company={company}/>
+          <JobVacancies company={company} />
 
         )}
         {selectedTab === "applicants" && (
@@ -341,41 +341,41 @@ function CompanyDashboard() {
               </div>
             </div>
             {/* --------------- */}
-            <Applications applicants={applicants} company={company}/>
+            <Applications applicants={applicants} company={company} />
             {/* ----------------------- */}
           </div>
         )}
 
         {selectedTab === "about" && (
-            <div className="space-y-8">
-              {/* About Section */}
-              <div className="bg-white rounded-xl shadow-sm p-8">
-                <h2 className="text-2xl font-bold mb-4">Giới thiệu về chúng tôi</h2>
-                <p className="text-gray-600 mb-6">{company.description}</p>
-                <h2 className="text-2xl font-bold mb-4">Yêu cầu</h2>
-                <p className="text-gray-600 mb-6">{company.requirements}</p>
+          <div className="space-y-8">
+            {/* About Section */}
+            <div className="bg-white rounded-xl shadow-sm p-8">
+              <h2 className="text-2xl font-bold mb-4">Giới thiệu về chúng tôi</h2>
+              <p className="text-gray-600 mb-6">{company.description}</p>
+              <h2 className="text-2xl font-bold mb-4">Yêu cầu</h2>
+              <p className="text-gray-600 mb-6">{company.requirements}</p>
 
-                {/* Technologies */}
-                <h3 className="text-xl font-semibold mb-4">
+              {/* Technologies */}
+              <h3 className="text-xl font-semibold mb-4">
                 Công nghệ chúng tôi sử dụng
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {company.technologies?.map((tech) => (
-                      <span
-                          key={tech.techId}
-                          className="px-3 py-1 bg-gray-100 rounded-full text-sm"
-                      >
-            {tech.techName}
-          </span>
-                  ))}
-                </div>
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {company.technologies?.map((tech) => (
+                  <span
+                    key={tech.techId}
+                    className="px-3 py-1 bg-gray-100 rounded-full text-sm"
+                  >
+                    {tech.techName}
+                  </span>
+                ))}
               </div>
-
-              <FeaturesAndPartners companyInfo={company}/>
-
-              {/* Contact */}
-              <ContactEmployee company={company}/>
             </div>
+
+            <FeaturesAndPartners companyInfo={company} />
+
+            {/* Contact */}
+            <ContactEmployee company={company} />
+          </div>
         )}
       </main>
 

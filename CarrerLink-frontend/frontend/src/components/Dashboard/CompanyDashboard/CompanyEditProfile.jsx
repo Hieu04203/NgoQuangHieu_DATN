@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Mail, MapPin, Briefcase, Globe, Smartphone, Users, Type, Tag, ListChecks,Camera } from 'lucide-react';
+import { Mail, MapPin, Briefcase, Globe, Smartphone, Users, Type, Tag, ListChecks, Camera } from 'lucide-react';
 import { AuthContext } from '../../../api/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -54,6 +54,9 @@ function CompanyEditProfile() {
                         size: response.data.size,
                         technologies: response.data.technologies || [],
                     });
+                    // Set initial values for profile picture and cover image
+                    setProfilePicture(response.data.companyPicUrl);
+                    setCoverImagePreview(response.data.coverPicUrl);
                 }
             } catch (error) {
                 console.error('Error fetching company data:', error);
@@ -152,7 +155,7 @@ function CompanyEditProfile() {
                     {/* Company Image Upload */}
                     <div className="relative">
                         <img
-                            src={profilePicture || company?.companyImageUrl || '/placeholder-company.png'} // fallback
+                            src={profilePicture || company?.companyPicUrl || '/placeholder-company.png'} // fallback
                             alt="Company"
                             className="w-40 h-40 border-gray-300 border rounded-full object-cover"
                         />
@@ -175,7 +178,7 @@ function CompanyEditProfile() {
                     {/* Cover Image Upload */}
                     <div className="relative">
                         <img
-                            src={coverImagePreview || company?.coverImageUrl || '/placeholder-cover.jpg'} // fallback
+                            src={coverImagePreview || company?.coverPicUrl || '/placeholder-cover.jpg'} // fallback
                             alt="Cover"
                             className="w-96 h-40 pl-4  ml-4 border-gray-300 border rounded-xl object-cover"
                         />
@@ -201,7 +204,7 @@ function CompanyEditProfile() {
                     <div className="space-y-4">
                         {/* Company Name */}
                         <div className="flex items-center space-x-4">
-                            <Type className="h-5 w-5 text-gray-400"/>
+                            <Type className="h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
                                 name="name"
@@ -215,7 +218,7 @@ function CompanyEditProfile() {
 
                         {/* Slogan */}
                         <div className="flex items-center space-x-4">
-                            <Type className="h-5 w-5 text-gray-400"/>
+                            <Type className="h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
                                 name="slogan"
@@ -228,7 +231,7 @@ function CompanyEditProfile() {
 
                         {/* Description */}
                         <div className="flex items-center space-x-4">
-                            <Briefcase className="h-5 w-5 text-gray-400"/>
+                            <Briefcase className="h-5 w-5 text-gray-400" />
                             <textarea
                                 name="description"
                                 value={formData.description}
@@ -241,7 +244,7 @@ function CompanyEditProfile() {
 
                         {/* Category */}
                         <div className="flex items-center space-x-4">
-                            <Tag className="h-5 w-5 text-gray-400"/>
+                            <Tag className="h-5 w-5 text-gray-400" />
                             <select
                                 name="category"
                                 value={formData.category}
@@ -260,7 +263,7 @@ function CompanyEditProfile() {
 
                         {/* Requirements */}
                         <div className="flex items-center space-x-4">
-                            <ListChecks className="h-5 w-5 text-gray-400"/>
+                            <ListChecks className="h-5 w-5 text-gray-400" />
                             <textarea
                                 name="requirements"
                                 value={formData.requirements}
@@ -274,7 +277,7 @@ function CompanyEditProfile() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Location */}
                             <div className="flex items-center space-x-4">
-                                <MapPin className="h-5 w-5 text-gray-400"/>
+                                <MapPin className="h-5 w-5 text-gray-400" />
                                 <input
                                     type="text"
                                     name="location"
@@ -287,7 +290,7 @@ function CompanyEditProfile() {
 
                             {/* Mobile */}
                             <div className="flex items-center space-x-4">
-                                <Smartphone className="h-5 w-5 text-gray-400"/>
+                                <Smartphone className="h-5 w-5 text-gray-400" />
                                 <input
                                     type="text"
                                     name="mobile"
@@ -302,7 +305,7 @@ function CompanyEditProfile() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Website */}
                             <div className="flex items-center space-x-4">
-                                <Globe className="h-5 w-5 text-gray-400"/>
+                                <Globe className="h-5 w-5 text-gray-400" />
                                 <input
                                     type="text"
                                     name="website"
@@ -315,7 +318,7 @@ function CompanyEditProfile() {
 
                             {/* Company Size */}
                             <div className="flex items-center space-x-4">
-                                <Users className="h-5 w-5 text-gray-400"/>
+                                <Users className="h-5 w-5 text-gray-400" />
                                 <select
                                     name="size"
                                     value={formData.size}
