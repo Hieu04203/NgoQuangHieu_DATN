@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Camera, Mail, MapPin } from 'lucide-react';
-import DashboardLayout from '../Dashboard/StudentDashboard/StudentDashboardLayout';
-import UpdateStudent from '../../api/StudentDetailsUpdateApi';
 import { AuthContext } from '../../api/AuthProvider';
 import { getStudentByUsername } from '../../api/StudentDetailsApi';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import StudentHeader from '../Headers/StudentHeader';
+import UpdateStudent from '../../api/StudentDetailsUpdateApi';
 
 const allTechnologies = [
   "Spring Boot", "React", "Node.js", "Python", "MongoDB",
@@ -174,11 +174,20 @@ function EditProfile() {
     }
   };
 
-  if (!student) return <div>Đang tải...</div>;
+  if (!student) return (
+    <>
+      <StudentHeader />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <span className="ml-2 text-gray-600">Đang tải...</span>
+      </div>
+    </>
+  );
 
   return (
-    <DashboardLayout>
-      <div className="max-w-4xl mx-auto">
+    <>
+      <StudentHeader />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Chỉnh sửa hồ sơ</h2>
 
         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
@@ -199,65 +208,68 @@ function EditProfile() {
               />
               <label
                 htmlFor="profileInput"
-                className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors cursor-pointer"
+                className="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full cursor-pointer hover:bg-indigo-700 transition-colors"
               >
-                <Camera className="h-5 w-5" />
+                <Camera className="w-5 h-5" />
               </label>
             </div>
           </div>
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Họ
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Họ</label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Tên</label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             {/* Contact Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Thông tin liên lạc</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Mail className="h-5 w-5 text-gray-400" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
-                <div className="flex items-center space-x-4">
-                  <MapPin className="h-5 w-5 text-gray-400" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPin className="h-5 w-5 text-gray-400" />
+                  </div>
                   <input
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Nhập địa chỉ của bạn"
+                    className="block w-full pl-10 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -265,75 +277,83 @@ function EditProfile() {
 
             {/* Technologies */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Công nghệ</h3>
-              <div className="space-y-4">
-                <select
-                  onChange={(e) => addTechnology(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="">Chọn một công nghệ</option>
-                  {allTechnologies.map(tech => (
-                    <option key={tech} value={tech}>{tech}</option>
-                  ))}
-                </select>
-                <div className="flex flex-wrap gap-2">
-                  {formData.technologies.map(tech => (
-                    <span
-                      key={tech.techName}
-                      className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center"
+              <label className="block text-sm font-medium text-gray-700 mb-2">Công nghệ</label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formData.technologies.map((tech, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                  >
+                    {tech.techName}
+                    <button
+                      type="button"
+                      onClick={() => removeTechnology(tech.techName)}
+                      className="ml-2 inline-flex items-center justify-center w-4 h-4 text-indigo-400 hover:text-indigo-600"
                     >
-                      {tech.techName}
-                      <button
-                        type="button"
-                        onClick={() => removeTechnology(tech.techName)}
-                        className="ml-2 text-indigo-600 hover:text-indigo-800"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
+                      ×
+                    </button>
+                  </span>
+                ))}
               </div>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) addTechnology(e.target.value);
+                  e.target.value = '';
+                }}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
+                defaultValue=""
+              >
+                <option value="" disabled>Chọn công nghệ...</option>
+                {allTechnologies.filter(tech =>
+                  !formData.technologies.some(t => t.techName === tech)
+                ).map(tech => (
+                  <option key={tech} value={tech}>{tech}</option>
+                ))}
+              </select>
             </div>
 
             {/* Job Fields */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Lĩnh vực </h3>
-              <div className="space-y-4">
-                <select
-                  onChange={(e) => addJobField(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="">Chọn một lĩnh vực công việc</option>
-                  {allJobFields.map(field => (
-                    <option key={field} value={field}>{field}</option>
-                  ))}
-                </select>
-                <div className="flex flex-wrap gap-2">
-                  {formData.jobsFields.map(field => (
-                    <span
-                      key={field.jobField}
-                      className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm flex items-center"
+              <label className="block text-sm font-medium text-gray-700 mb-2">Lĩnh vực công việc</label>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formData.jobsFields.map((field, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+                  >
+                    {field.jobField}
+                    <button
+                      type="button"
+                      onClick={() => removeJobField(field.jobField)}
+                      className="ml-2 inline-flex items-center justify-center w-4 h-4 text-green-400 hover:text-green-600"
                     >
-                      {field.jobField}
-                      <button
-                        type="button"
-                        onClick={() => removeJobField(field.jobField)}
-                        className="ml-2 text-indigo-600 hover:text-indigo-800"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
+                      ×
+                    </button>
+                  </span>
+                ))}
               </div>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) addJobField(e.target.value);
+                  e.target.value = '';
+                }}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
+                defaultValue=""
+              >
+                <option value="" disabled>Chọn lĩnh vực...</option>
+                {allJobFields.filter(field =>
+                  !formData.jobsFields.some(f => f.jobField === field)
+                ).map(field => (
+                  <option key={field} value={field}>{field}</option>
+                ))}
+              </select>
             </div>
 
-            {/* Submit */}
-            <div>
+            {/* Submit Button */}
+            <div className="flex justify-end">
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors"
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Lưu thay đổi
               </button>
@@ -341,7 +361,7 @@ function EditProfile() {
           </form>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 }
 

@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect, useContext } from "react"
-import DashboardLayout from "../StudentDashboard/StudentDashboardLayout"
 import { AuthContext } from "../../../api/AuthProvider"
 import { getJobRecommendations, applyForJob } from "../../../api/StudentDetailsApi"
 import StudentJobCard from "./StudentJobCard"
 import { AlertTriangle, Info } from "lucide-react"
 import Swal from 'sweetalert2';
+import StudentHeader from "../../Headers/StudentHeader"
 
 const RecommendedJobs = () => {
     const [jobs, setJobs] = useState([])
@@ -83,62 +83,65 @@ const RecommendedJobs = () => {
     }, [token])
 
     return (
-        <DashboardLayout>
-            <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-gray-800">Việc làm được đề xuất</h2>
-                </div>
-
-                {error && (
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
-                        <p className="text-red-700">{error}</p>
+        <>
+            <StudentHeader />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-2xl font-bold text-gray-800">Việc làm được đề xuất</h2>
                     </div>
-                )}
 
-                {Array.from(recommendationMessages).map((message, index) => (
-                    <div
-                        key={index}
-                        className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-md flex items-start gap-3"
-                    >
-                        <Info className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
-                        <p className="text-indigo-700">{message}</p>
-                    </div>
-                ))}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {loading ? (
-                        Array(3).fill().map((_, index) => (
-                            <div key={index} className="animate-pulse bg-gray-100 rounded-xl p-6 h-64">
-                                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                                <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-                                <div className="h-3 bg-gray-200 rounded w-2/3 mb-6"></div>
-                                <div className="h-8 bg-gray-200 rounded w-full"></div>
-                            </div>
-                        ))
-                    ) : jobs.length > 0 ? (
-                        jobs.map((recommendation) => ({
-                            ...recommendation,
-                            job: {
-                                ...recommendation.job,
-                                applied: appliedJobs.has(recommendation.job.jobId)
-                            }
-                        })).map((recommendation) => (
-                            <StudentJobCard
-                                key={recommendation.job.jobId}
-                                job={recommendation.job}
-                                onApply={handleApplyJob}
-                                className="hover:shadow-lg transition-shadow duration-200"
-                            />
-                        ))
-                    ) : (
-                        <div className="col-span-full text-center py-8 text-gray-500">
-                           Không tìm thấy đề xuất công việc nào dựa trên hồ sơ của bạn
+                    {error && (
+                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                            <p className="text-red-700">{error}</p>
                         </div>
                     )}
+
+                    {Array.from(recommendationMessages).map((message, index) => (
+                        <div
+                            key={index}
+                            className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-md flex items-start gap-3"
+                        >
+                            <Info className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+                            <p className="text-indigo-700">{message}</p>
+                        </div>
+                    ))}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {loading ? (
+                            Array(3).fill().map((_, index) => (
+                                <div key={index} className="animate-pulse bg-gray-100 rounded-xl p-6 h-64">
+                                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-2/3 mb-6"></div>
+                                    <div className="h-8 bg-gray-200 rounded w-full"></div>
+                                </div>
+                            ))
+                        ) : jobs.length > 0 ? (
+                            jobs.map((recommendation) => ({
+                                ...recommendation,
+                                job: {
+                                    ...recommendation.job,
+                                    applied: appliedJobs.has(recommendation.job.jobId)
+                                }
+                            })).map((recommendation) => (
+                                <StudentJobCard
+                                    key={recommendation.job.jobId}
+                                    job={recommendation.job}
+                                    onApply={handleApplyJob}
+                                    className="hover:shadow-lg transition-shadow duration-200"
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-8 text-gray-500">
+                                Không tìm thấy đề xuất công việc nào dựa trên hồ sơ của bạn
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </DashboardLayout>
+        </>
     )
 }
 

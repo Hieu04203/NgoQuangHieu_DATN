@@ -24,7 +24,7 @@ import TestPlatform from "./components/studentDashboard/TestPlatform";
 import Companies from "./pages/Companies";
 import EditProfile from "./components/studentDashboard/EditProfile";
 import JobPage from "./pages/JobPage";
-import AdminDashboard from "./components/Dashboard/AdminDashboard/AdminDashboard"; // Import the JobPage component
+import AdminDashboard from "./components/Dashboard/AdminDashboard/AdminDashboard";
 import RecommendedJobs from "./components/Dashboard/StudentDashboard/RecommendedJobs";
 import AdminAuth from "./pages/AdminAuth";
 import AdminRegister from "./pages/AdminRegister";
@@ -41,17 +41,16 @@ const Layout = () => {
     <>
       <Header />
       <main>
-        <Outlet /> {/* This renders the child route's component */}
+        <Outlet />
       </main>
       <Footer />
     </>
   );
 };
+
 const router = createBrowserRouter([
-
-
   {
-    element: <Layout />, // Applies Header/Footer to all child routes
+    element: <Layout />,
     children: [
       { path: '/', element: <Home /> },
       { path: '/company-auth', element: <CompanyAuth /> },
@@ -67,21 +66,14 @@ const router = createBrowserRouter([
       { path: '/courses', element: <Courses /> },
       { path: '/contact', element: <Contact /> },
       { path: '/employees', element: <Companies /> },
-      { path: '/jobs/:jobId', element: <JobPage /> }, // Add this route for JobPage
-      {
-        path: "/forgot-password",
-        element: <ForgotPasswordPage />
-      },
-      {
-        path: "/verify-otp",
-        element: <VerifyOtpPage />
-      },
-
+      { path: '/jobs/:jobId', element: <JobPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/verify-otp", element: <VerifyOtpPage /> },
     ],
   },
   {
     path: '/student',
-    element: <StudentDashBoard /> // No Header/Footer for this route
+    element: <StudentDashBoard />
   },
   {
     path: '/admin',
@@ -89,7 +81,7 @@ const router = createBrowserRouter([
       <AdminProtectedRoute>
         <AdminDashboard />
       </AdminProtectedRoute>
-    ), // No Header/Footer for this route
+    ),
   },
   {
     path: '/cv/template1',
@@ -114,7 +106,8 @@ const router = createBrowserRouter([
   {
     path: '/bluetemplate',
     element: <CvTemplate7 />
-  }, {
+  },
+  {
     path: '/testplatform',
     element: <TestPlatform />
   },
@@ -130,9 +123,14 @@ const router = createBrowserRouter([
     path: "/student-dashboard/courses",
     element: <RecommendedCourses />,
   },
-
-  { path: "/editprofile", element: <EditProfile /> },
-  { path: "student-dashboard/cv", element: <StudentCV /> },
+  {
+    path: "/editprofile",
+    element: <EditProfile />
+  },
+  {
+    path: "student-dashboard/cv",
+    element: <StudentCV />
+  }
 ]);
 
 function App() {

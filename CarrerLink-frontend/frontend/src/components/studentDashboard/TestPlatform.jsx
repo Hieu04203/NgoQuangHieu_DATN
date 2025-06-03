@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, X, Check, Loader2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import StudentDashboardLayout from '../Dashboard/StudentDashboard/StudentDashboardLayout';
+import StudentHeader from '../Headers/StudentHeader';
 
 const TestPlatform = () => {
   const [tests, setTests] = useState([]);
@@ -185,9 +185,10 @@ const TestPlatform = () => {
   const enrolledTestsList = tests.filter(test => enrolledTests.includes(test.testId));
 
   return (
-    <StudentDashboardLayout>
-      <div className="bg-gray-100 min-h-screen p-6">
-        <div className="max-w-7xl mx-auto">
+    <>
+      <StudentHeader />
+      <div className="bg-gray-100 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Upcoming Exams Section */}
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Bài TEST sắp tới</h2>
           {upcomingTests.length === 0 ? (
@@ -211,7 +212,6 @@ const TestPlatform = () => {
                     >
                       Tham gia
                     </button>
-
                   </div>
                 </div>
               ))}
@@ -257,7 +257,7 @@ const TestPlatform = () => {
 
           {/* Modal for Test Details or Taking Test */}
           {selectedTest && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fade-in p-0">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
               <div className="bg-white rounded-3xl shadow-2xl w-full h-full p-10 overflow-y-auto border border-gray-200 transform transition-all duration-300 scale-95 hover:scale-100">
                 <div className="flex justify-between items-center mb-8">
                   <h4 className="text-3xl font-bold text-gray-800">{takingTest ? 'Làm bài TEST' : 'Chi tiết TEST'}</h4>
@@ -379,7 +379,7 @@ const TestPlatform = () => {
           )}
         </div>
       </div>
-    </StudentDashboardLayout>
+    </>
   );
 };
 

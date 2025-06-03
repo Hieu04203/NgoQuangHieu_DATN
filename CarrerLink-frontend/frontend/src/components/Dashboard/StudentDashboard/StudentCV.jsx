@@ -17,7 +17,7 @@ import {
     Plus,
     Trash2
 } from 'lucide-react';
-import StudentDashboardLayout from "./StudentDashboardLayout";
+import StudentHeader from "../../Headers/StudentHeader";
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
 import { Save } from 'lucide-react';
@@ -1417,8 +1417,9 @@ function App() {
     };
 
     return (
-        <StudentDashboardLayout>
-            <div className="max-w-7xl mx-auto">
+        <>
+            <StudentHeader />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="relative flex h-screen">
 
                     <button
@@ -1698,7 +1699,7 @@ function App() {
                     </div>
                 </div>
             </div>
-        </StudentDashboardLayout>
+        </>
     );
 }
 
