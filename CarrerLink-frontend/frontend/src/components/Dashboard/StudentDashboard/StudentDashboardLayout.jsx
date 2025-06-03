@@ -15,8 +15,9 @@ import { AuthContext } from "../../../api/AuthProvider";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import SuggestedProjects from "./SuggestedProjects";
+import { getStudentByUsername } from "../../../api/StudentDetailsApi";
 
-function StudentDashboardLayout({ children, StudentName, profileImage }) {
+function StudentDashboardLayout({ children }) {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [stompClient, setStompClient] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [studentInfo, setStudentInfo] = useState(null);
 
   const navigationItems = [
     { path: "/student", icon: Home, label: "Home" },
@@ -35,71 +37,36 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
     { path: "/student-dashboard/cv", icon: FileSpreadsheet, label: "CV" },
   ];
 
-  const extractStudentIdFromToken = (token) => {
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      if (!token) return;
+      try {
+        const userId = extractUsernameFromToken(token);
+        if (!userId) {
+          console.error('Không thể lấy userId từ token');
+          return;
+        }
+        const response = await getStudentByUsername(userId);
+        if (response?.success) {
+          setStudentInfo(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching student data:', error);
+      }
+    };
+
+    fetchStudentData();
+  }, [token]);
+
+  const extractUsernameFromToken = (token) => {
     try {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      return decodedToken.studentId; // Adjust based on your token structure
+      return decodedToken.userId;
     } catch (error) {
       console.error("Lỗi giải mã mã thông báo", error);
       return null;
     }
   };
-
-  useEffect(() => {
-    const studentId = extractStudentIdFromToken(token);
-    if (!studentId) return;
-    console.log(studentId);
-    // Add this fetch to load existing notifications
-    fetch(`http://localhost:8091/api/notifications/${studentId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`Lỗi HTTP! trạng thái: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Raw notification data:", data);
-        const sorted = data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setNotifications(sorted);
-      })
-      .catch((err) => console.error("Lỗi tải thông báo", err));
-
-    // Fetch initial unread count
-    fetch(`http://localhost:8091/api/notifications/${studentId}/unread-count`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Không thể lấy số lượng chưa đọc");
-        return res.json();
-      })
-
-      .then((count) => setUnreadCount(count))
-      .catch((err) => console.error("Lỗi khi lấy số lượng chưa đọc", err));
-    console.log(notifications);
-    // Connect to WebSocket
-    const socket = new SockJS("http://localhost:8091/ws");
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(
-          `/user/${studentId}/queue/notifications`,
-          (message) => {
-            console.log("Received WebSocket message:", message.body); // Log incoming messages
-            const notification = JSON.parse(message.body);
-            setNotifications((prev) => [notification, ...prev]);
-            setUnreadCount((prev) => prev + 1);
-          }
-        );
-      },
-      onStompError: (frame) => {
-        console.error("WebSocket error:", frame.headers.message);
-      },
-    });
-    client.activate();
-    setStompClient(client);
-
-    return () => {
-      if (client) client.deactivate();
-    };
-  }, [token]);
 
   const handleLogout = () => {
     logout();
@@ -139,8 +106,8 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-colors ${isActive(item.path)
-                    ? "bg-indigo-50 text-indigo-600"
-                    : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-indigo-50 text-indigo-600"
+                  : "text-gray-700 hover:bg-gray-50"
                   }`}
               >
                 <item.icon className="h-5 w-5" />
@@ -167,52 +134,19 @@ function StudentDashboardLayout({ children, StudentName, profileImage }) {
             Bảng điều khiển của ứng viên
           </h1>
           <div className="flex items-center space-x-4">
-            <div className="relative">
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 max-h-60 overflow-y-auto">
-                  {notifications.length === 0 ? (
-                    <p className="text-sm text-gray-500">No notifications</p>
-                  ) : (
-                    notifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        className="text-sm text-gray-700 mb-2"
-                      >
-                        <p>{notif.message}</p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(
-                            notif.createdAt[0], // Year
-                            notif.createdAt[1] - 1, // Month (Java months 1-12 → JS months 0-11)
-                            notif.createdAt[2], // Day
-                            notif.createdAt[3], // Hours
-                            notif.createdAt[4], // Minutes
-                            notif.createdAt[5] // Seconds
-                          ).toLocaleString()}
-                        </p>
-                        {!notif.isRead && (
-                          <button
-                            className="text-xs text-blue-500"
-                            onClick={() => markAsRead(notif.id)}
-                          >
-                            Mark as Read
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-            <Link
-              to="/editprofile"
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
+            <Link to="/editprofile" className="flex items-center space-x-2">
               <img
-                src={profileImage}
+                src={studentInfo?.profileImageUrl || '/placeholder.svg'}
                 alt="Profile"
-                className="w-8 h-8 rounded-full"
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-lg border-2 border-indigo-200"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder.svg';
+                }}
               />
-              <span className="font-medium">{StudentName}</span>
+              <span className="font-medium">
+                {studentInfo?.firstName || 'Loading...'}
+              </span>
             </Link>
           </div>
         </header>

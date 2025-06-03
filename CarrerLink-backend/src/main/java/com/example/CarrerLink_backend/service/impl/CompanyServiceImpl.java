@@ -1,6 +1,5 @@
 package com.example.CarrerLink_backend.service.impl;
 
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.CarrerLink_backend.config.CompanyRegisteredEvent;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
@@ -62,13 +60,13 @@ public class CompanyServiceImpl implements CompanyService {
     private final JobRepo jobRepo;
     private final StudentRepo studentRepo;
     private final AmazonS3 amazonS3;
-    private final  FileServiceImpl fileService;
+    private final FileServiceImpl fileService;
     private final EmailService emailService;
     private final Cloudinary cloudinary;
 
-//    private  ApplicationEventPublisher eventPublisher;
-//    private  SimpMessagingTemplate messagingTemplate;
-//    private  NotificationRepository notificationRepository;
+    // private ApplicationEventPublisher eventPublisher;
+    // private SimpMessagingTemplate messagingTemplate;
+    // private NotificationRepository notificationRepository;
     @Override
     public List<CompanygetResponseDTO> getCompanies(String location, String category) {
         List<Company> companies;
@@ -85,7 +83,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (companies.isEmpty()) {
             throw new RuntimeException("No companies found for the given filters.");
         }
-        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {}.getType());
+        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {
+        }.getType());
     }
 
     @Override
@@ -94,7 +93,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (companies.isEmpty()) {
             throw new ResourceNotFoundException("No companies found.");
         }
-        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {}.getType());
+        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {
+        }.getType());
     }
 
     @Override
@@ -106,7 +106,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (companies.isEmpty()) {
             throw new ResourceNotFoundException("No companies found with the name: " + name);
         }
-        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {}.getType());
+        return modelMapper.map(companies, new TypeToken<List<CompanygetResponseDTO>>() {
+        }.getType());
     }
 
     public String saveCompany(CompanySaveRequestDTO dto, UserEntity user) {
@@ -133,7 +134,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Transactional
-    public String updateCompany(CompanyUpdateRequestDTO dto, MultipartFile companyImage, MultipartFile coverImage) throws IOException {
+    public String updateCompany(CompanyUpdateRequestDTO dto, MultipartFile companyImage, MultipartFile coverImage)
+            throws IOException {
         if (dto.getId() == null) {
             throw new InvalidInputException("Company ID is required for an update.");
         }
@@ -154,7 +156,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         // Xử lý upload ảnh companyImage
         if (companyImage != null && !companyImage.isEmpty()) {
-            String companyImageUrl = uploadImageToCloudinary(companyImage, "companies/" + company.getId() + "/company_image");
+            String companyImageUrl = uploadImageToCloudinary(companyImage,
+                    "companies/" + company.getId() + "/company_image");
             company.setCompanyPicUrl(companyImageUrl);
         }
 
@@ -174,8 +177,6 @@ public class CompanyServiceImpl implements CompanyService {
                 ObjectUtils.asMap("folder", folderPath));
         return uploadResult.get("secure_url").toString();
     }
-
-
 
     public String saveCompanyImageFile(long companyId, MultipartFile file, String imageType) {
         if (file == null || file.isEmpty()) {
@@ -221,10 +222,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-
-
-
-    public void updateProducts(CompanyUpdateRequestDTO companyUpdateRequestDTO,Company company){
+    public void updateProducts(CompanyUpdateRequestDTO companyUpdateRequestDTO, Company company) {
         if (companyUpdateRequestDTO.getProducts() != null) {
             for (Products product : company.getProducts()) {
                 product.setCompany(company);
@@ -237,7 +235,8 @@ public class CompanyServiceImpl implements CompanyService {
             List<Client> clients = new ArrayList<>();
             for (ClientDTO mappedClient : companyUpdateRequestDTO.getClients()) {
                 Client client = clientRepo.findByClientName(mappedClient.getClientName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Client with name " + mappedClient.getClientName() + ACTION_1));
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Client with name " + mappedClient.getClientName() + ACTION_1));
                 clients.add(client);
             }
             company.setClients(clients);
@@ -249,13 +248,13 @@ public class CompanyServiceImpl implements CompanyService {
             List<Technology> technologies = new ArrayList<>();
             for (TechnologyDTO mappedTechnology : companyUpdateRequestDTO.getTechnologies()) {
                 Technology technology = technologyRepo.findByTechName(mappedTechnology.getTechName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Technology with name " + mappedTechnology.getTechName() + ACTION_1));
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Technology with name " + mappedTechnology.getTechName() + ACTION_1));
                 technologies.add(technology);
             }
             company.setTechnologies(technologies);
         }
     }
-
 
     @Override
     public void deleteCompany(Long id) {
@@ -272,32 +271,31 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-
     @Override
     public CompanygetResponseDTO getCompanyByName(String username) {
-        Company company = companyRepository.findByName(username).orElseThrow(()->new RuntimeException("Company not found"));
+        Company company = companyRepository.findByName(username)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
         return modelMapper.map(company, CompanygetResponseDTO.class);
     }
-
 
     @Override
     public CompanygetResponseDTO getCompanyByUserId(int userId) {
-        Company company = companyRepository.findByUser_Id(userId).orElseThrow(()->new RuntimeException("Company not found"));
+        Company company = companyRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
         return modelMapper.map(company, CompanygetResponseDTO.class);
     }
 
-
     @Override
-    public String approveJob(int studentId,int jobId,JobApproveResponseDTO jobApproveResponseDTO) {
-        if(jobRepo.existsById(jobId)){
+    public String approveJob(int studentId, int jobId, JobApproveResponseDTO jobApproveResponseDTO) {
+        if (jobRepo.existsById(jobId)) {
 
-            Job job = jobRepo.findByJobId(jobId).orElseThrow(()->new RuntimeException("Job not found"));
-            Student student = studentRepo.findById(studentId).orElseThrow(()->new RuntimeException("Student not found"));
-            StudentJobs studentJobs = studentJobsRepo.findByStudentAndJob(student,job);
+            Job job = jobRepo.findByJobId(jobId).orElseThrow(() -> new RuntimeException("Job not found"));
+            Student student = studentRepo.findById(studentId)
+                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            StudentJobs studentJobs = studentJobsRepo.findByStudentAndJob(student, job);
             studentJobs.setInterviewDate(jobApproveResponseDTO.getInterviewDate());
             studentJobs.setStatus(jobApproveResponseDTO.getStatus());
             studentJobsRepo.save(studentJobs);
-
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy 'at' hh:mm a");
             String formattedDateTime = studentJobs.getInterviewDate().format(formatter) + " UTC";
@@ -306,9 +304,7 @@ public class CompanyServiceImpl implements CompanyService {
                     student.getFirstName(),
                     job.getJobTitle(),
                     formattedDateTime,
-                    job.getCompany().getName()
-            );
-
+                    job.getCompany().getName());
 
             try {
                 emailService.sendEmail(student.getEmail(), "Interview Scheduled - " + job.getJobTitle(), emailBody);
@@ -317,37 +313,36 @@ public class CompanyServiceImpl implements CompanyService {
 
             }
 
-
-//            Notification notification = Notification.builder()
-//                    .message("Your job application for " + job.getJobTitle() + " has been approved!")
-//                    .userId((long) studentId)
-//                    .isRead(false)
-//                    .createdAt(LocalDateTime.now())
-//                    .student(student)
-//                    .build();
-//            notificationService.sendNotification(String.valueOf(studentId), notification);
+            // Notification notification = Notification.builder()
+            // .message("Your job application for " + job.getJobTitle() + " has been
+            // approved!")
+            // .userId((long) studentId)
+            // .isRead(false)
+            // .createdAt(LocalDateTime.now())
+            // .student(student)
+            // .build();
+            // notificationService.sendNotification(String.valueOf(studentId),
+            // notification);
 
             return "approved successfully ";
-        }
-        else{
+        } else {
             throw new ResourceNotFoundException("Job not found");
         }
 
-
-
     }
 
-    public List<ApplicantDetailsgetResponseDTO> getApprovedApplicants(int companyId){
+    public List<ApplicantDetailsgetResponseDTO> getApprovedApplicants(int companyId) {
 
         List<Job> jobs = jobRepo.findByCompany_Id(Long.valueOf(companyId));
-//        List<StudentJobs> studentJobs = studentJobsRepo.findByStatusTrueAndJob_JobId()
+        // List<StudentJobs> studentJobs =
+        // studentJobsRepo.findByStatusTrueAndJob_JobId()
         List<StudentJobs> studentJobs = new ArrayList<>();
-        for(Job job : jobs){
+        for (Job job : jobs) {
             List<StudentJobs> studentJobs1 = studentJobsRepo.findByStatusTrueAndJob_JobId(job.getJobId());
             studentJobs.addAll(studentJobs1);
         }
         List<ApplicantDetailsgetResponseDTO> applicantDetailsgetResponseDTOList = new ArrayList<>();
-        for(StudentJobs studentJobs2:studentJobs){
+        for (StudentJobs studentJobs2 : studentJobs) {
             ApplicantDetailsgetResponseDTO applicantDetailsgetResponseDTO = new ApplicantDetailsgetResponseDTO();
             applicantDetailsgetResponseDTO.setFirstName(studentJobs2.getStudent().getFirstName());
             applicantDetailsgetResponseDTO.setLastName(studentJobs2.getStudent().getLastName());
@@ -355,11 +350,21 @@ public class CompanyServiceImpl implements CompanyService {
             applicantDetailsgetResponseDTO.setStatus(studentJobs2.getStatus());
             applicantDetailsgetResponseDTO.setInterviewDate(studentJobs2.getInterviewDate());
             applicantDetailsgetResponseDTO.setJobFieldName(studentJobs2.getJob().getJobTitle());
+
+            // Try to get profile image URL from both possible sources
+            Student student = studentJobs2.getStudent();
+            if (student.getProfilePicUrl() != null) {
+                applicantDetailsgetResponseDTO.setProfileImageUrl(student.getProfilePicUrl());
+            } else if (student.getUser() != null && student.getUser().getProfileImage() != null) {
+                applicantDetailsgetResponseDTO.setProfileImageUrl(student.getUser().getProfileImage().getUrl());
+            }
+
             applicantDetailsgetResponseDTOList.add(applicantDetailsgetResponseDTO);
         }
         return applicantDetailsgetResponseDTOList;
-        
+
     }
+
     public Company findByUser(UserEntity user) {
         return companyRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Company not found for user"));

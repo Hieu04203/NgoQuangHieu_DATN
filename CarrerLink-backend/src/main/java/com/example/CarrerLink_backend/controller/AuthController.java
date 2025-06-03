@@ -1,6 +1,5 @@
 package com.example.CarrerLink_backend.controller;
 
-
 import com.example.CarrerLink_backend.dto.AdminSaveRequestDTO;
 import com.example.CarrerLink_backend.dto.request.*;
 import com.example.CarrerLink_backend.dto.response.LoginResponseDTO;
@@ -27,63 +26,63 @@ import java.util.List;
 public class AuthController {
     private final AuthService authService;
 
-
     @GetMapping
-    public List<UserEntity> getAllUsers(){
+    public List<UserEntity> getAllUsers() {
         return authService.getAllUsers();
     }
 
     @PostMapping
-    public UserEntity createUser(@RequestBody RegisterRequestDTO userEntity){
+    public UserEntity createUser(@RequestBody RegisterRequestDTO userEntity) {
         return authService.createUser(userEntity);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO){
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
         LoginResponseDTO res = authService.login(loginRequestDTO);
-        if(res.getError()!=null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+        if (res.getError() != null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO registerRequestDTO){
-//
-//        RegisterResponseDTO res = authService.register(registerRequestDTO);
-//        if(res.getError()!=null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(res);
-//    }
+    // @PostMapping("/register")
+    // public ResponseEntity<RegisterResponseDTO> register(@RequestBody
+    // RegisterRequestDTO registerRequestDTO){
+    //
+    // RegisterResponseDTO res = authService.register(registerRequestDTO);
+    // if(res.getError()!=null) return
+    // ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    //
+    // return ResponseEntity.status(HttpStatus.OK).body(res);
+    // }
 
     @PostMapping(value = "/register/company", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RegisterResponseDTO> registerCompany(
             @RequestPart("company") String companyJson,
             @RequestPart(value = "companyPic", required = false) MultipartFile companyPic,
-            @RequestPart(value = "coverPic", required = false) MultipartFile coverPic) throws IOException, IllegalAccessException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        CompanySaveRequestDTO companySaveRequestDTO;
+            @RequestPart(value = "coverPic", required = false) MultipartFile coverPic) {
         try {
-            companySaveRequestDTO = objectMapper.readValue(companyJson, CompanySaveRequestDTO.class);
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().body(new RegisterResponseDTO(null, "Invalid JSON format"));
-        }
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompanySaveRequestDTO companySaveRequestDTO = objectMapper.readValue(companyJson,
+                    CompanySaveRequestDTO.class);
 
-        RegisterResponseDTO res = authService.registerCompany(companySaveRequestDTO, companyPic, coverPic);
-        if (res.getError() != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+            RegisterResponseDTO res = authService.registerCompany(companySaveRequestDTO, companyPic, coverPic);
+            if (res.getError() != null) {
+                return ResponseEntity.badRequest().body(res);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new RegisterResponseDTO(null, "Error during registration: " + e.getMessage()));
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
-
-
 
     @PostMapping(value = "/register/student", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RegisterResponseDTO> registerStudent(
             @RequestPart("student") String studentJson,
-            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IllegalAccessException, IOException {
+            @RequestPart(value = "image", required = false) MultipartFile imageFile)
+            throws IllegalAccessException, IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         StudentSaveRequestDTO studentSaveRequestDTO;
@@ -102,18 +101,18 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
-
-
     @PostMapping("/register/admin")
-    public ResponseEntity<StandardResponse> registerAdmin(@RequestBody AdminSaveRequestDTO adminSaveRequestDTO) throws IllegalAccessException {
+    public ResponseEntity<StandardResponse> registerAdmin(@RequestBody AdminSaveRequestDTO adminSaveRequestDTO)
+            throws IllegalAccessException {
         RegisterResponseDTO res = authService.registerAdmin(adminSaveRequestDTO);
-        if(res.getError()!=null) return ResponseEntity.badRequest().body(new StandardResponse(false, res.getError(), null));
+        if (res.getError() != null)
+            return ResponseEntity.badRequest().body(new StandardResponse(false, res.getError(), null));
 
-        return ResponseEntity.ok(new StandardResponse(true,"successfully registered",res));
+        return ResponseEntity.ok(new StandardResponse(true, "successfully registered", res));
     }
 
     @PostMapping("CreateRoles")
-    public ResponseEntity<RolesEntity> createRoles(@RequestBody RolesEntity rolesEntity){
+    public ResponseEntity<RolesEntity> createRoles(@RequestBody RolesEntity rolesEntity) {
         return ResponseEntity.ok(authService.createRoles(rolesEntity));
     }
 
@@ -121,7 +120,7 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         boolean sent = authService.sendOtpToEmail(email);
-        if(sent) {
+        if (sent) {
             return ResponseEntity.ok("OTP sent to your email");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to send OTP");

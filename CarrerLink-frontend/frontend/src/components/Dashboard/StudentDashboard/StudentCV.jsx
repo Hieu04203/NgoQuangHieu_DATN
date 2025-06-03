@@ -1385,284 +1385,286 @@ function App() {
 
     return (
         <StudentDashboardLayout>
-            <div className="relative flex h-screen">
+            <div className="max-w-7xl mx-auto">
+                <div className="relative flex h-screen">
 
-                <button
-                    onClick={handleSaveCV}
-                    className="absolute top-4 right-40 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
-                    <Save className="w-5 h-5 mr-2" />
-                    Lưu CV
-                </button>
-                <button
-                    onClick={handleSaveCV}
-                    className="absolute top-4 right-40 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
-                    <Save className="w-5 h-5 mr-2" />
-                    Lưu CV
-                </button>
-                <button
-                    onClick={handleDownloadPDF}
-                    className="absolute top-4 right-4 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
-                    <FileDown className="w-5 h-5 mr-2" />
-                    Export PDF
-                </button>
+                    <button
+                        onClick={handleSaveCV}
+                        className="absolute top-4 right-40 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
+                        <Save className="w-5 h-5 mr-2" />
+                        Lưu CV
+                    </button>
+                    <button
+                        onClick={handleSaveCV}
+                        className="absolute top-4 right-40 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
+                        <Save className="w-5 h-5 mr-2" />
+                        Lưu CV
+                    </button>
+                    <button
+                        onClick={handleDownloadPDF}
+                        className="absolute top-4 right-4 z-10 flex items-center justify-center px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-blue-50 transition-colors shadow">
+                        <FileDown className="w-5 h-5 mr-2" />
+                        Export PDF
+                    </button>
 
-                {/* Main Content */}
-                <div className="flex-1 flex">
-                    {/* Form Area */}
-                    <div className="flex-1 p-8 overflow-y-auto">
-                        <div className="max-w-2xl mx-auto">
-                            <h2 className="text-2xl font-bold mb-6">{sections.find(s => s.id === activeSection)?.title}</h2>
+                    {/* Main Content */}
+                    <div className="flex-1 flex">
+                        {/* Form Area */}
+                        <div className="flex-1 p-8 overflow-y-auto">
+                            <div className="max-w-2xl mx-auto">
+                                <h2 className="text-2xl font-bold mb-6">{sections.find(s => s.id === activeSection)?.title}</h2>
 
-                            <div className="bg-white rounded-lg shadow-sm p-6">
-                                {renderForm()}
+                                <div className="bg-white rounded-lg shadow-sm p-6">
+                                    {renderForm()}
+                                </div>
                             </div>
+
                         </div>
 
-                    </div>
 
+                        {/* Preview Area */}
+                        <div ref={previewRef} className="w-[800px] bg-gray-50 border-l p-8 overflow-y-auto">
+                            <div className="bg-white shadow-lg p-8 min-h-[700px]">
+                                <h1 className="text-3xl font-bold text-blue-900">{formData.personalInfo.name || 'John Doe'}</h1>
+                                <p className="text-lg text-blue-600 mb-4">{formData.personalInfo.title || 'Software Engineer'}</p>
 
-                    {/* Preview Area */}
-                    <div ref={previewRef} className="w-[800px] bg-gray-50 border-l p-8 overflow-y-auto">
-                        <div className="bg-white shadow-lg p-8 min-h-[700px]">
-                            <h1 className="text-3xl font-bold text-blue-900">{formData.personalInfo.name || 'John Doe'}</h1>
-                            <p className="text-lg text-blue-600 mb-4">{formData.personalInfo.title || 'Software Engineer'}</p>
+                                <div className="flex items-center text-sm text-gray-600 space-x-4 mb-6">
+                                    <span>{formData.personalInfo.location || 'New York, NY'}</span>
+                                    <span>{formData.personalInfo.phone || '(123) 456-7890'}</span>
+                                    <span>{formData.personalInfo.email || 'john.doe@example.com'}</span>
+                                </div>
 
-                            <div className="flex items-center text-sm text-gray-600 space-x-4 mb-6">
-                                <span>{formData.personalInfo.location || 'New York, NY'}</span>
-                                <span>{formData.personalInfo.phone || '(123) 456-7890'}</span>
-                                <span>{formData.personalInfo.email || 'john.doe@example.com'}</span>
-                            </div>
+                                <p className="text-gray-700 mb-8">
+                                    {formData.personalInfo.summary || 'Experienced software engineer with a passion for building innovative solutions.'}
+                                </p>
 
-                            <p className="text-gray-700 mb-8">
-                                {formData.personalInfo.summary || 'Experienced software engineer with a passion for building innovative solutions.'}
-                            </p>
-
-                            {formData.experience.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Experience
-                                    </h2>
-                                    {formData.experience.map(exp => (
-                                        <div key={exp.id} className="mb-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="font-semibold">{exp.title}</h3>
-                                                    <p className="text-gray-600">{exp.company}</p>
-                                                </div>
-                                                <p className="text-sm text-gray-500">
-                                                    {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
-                                                </p>
-                                            </div>
-                                            <p className="text-gray-700 mt-2">{exp.description}</p>
-                                        </div>
-                                    ))}
-                                </section>
-                            )}
-                            {formData.education.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Education
-                                    </h2>
-                                    {formData.education.map(edu => (
-                                        <div key={edu.id} className="mb-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="font-semibold">{edu.degree}</h3>
-                                                    <p className="text-gray-600">{edu.institution}, {edu.location}</p>
-                                                    {edu.gpa && <p className="text-gray-600 text-sm">GPA: {edu.gpa}</p>}
-                                                </div>
-                                                <p className="text-sm text-gray-500">
-                                                    {edu.startDate} - {edu.endDate}
-                                                </p>
-                                            </div>
-                                            {edu.description && <p className="text-gray-700 mt-2">{edu.description}</p>}
-                                        </div>
-                                    ))}
-                                </section>
-                            )}
-
-                            {/* Soft Skills Section Preview */}
-                            {formData.softSkills.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Kỹ năng mềm
-                                    </h2>
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.softSkills.map((skill, index) => (
-                                            <span key={index} className=" text-gray-700 px-3 py-1 rounded-full text-sm">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </section>
-                            )}
-
-                            {/* Technical Skills Section Preview */}
-                            {(formData.technicalSkills.frontend.length > 0 ||
-                                formData.technicalSkills.backend.length > 0 ||
-                                formData.technicalSkills.languages.length > 0 ||
-                                formData.technicalSkills.tools.length > 0) && (
+                                {formData.experience.length > 0 && (
                                     <section className="mb-6">
                                         <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                            Technical Skills
+                                            Experience
                                         </h2>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {formData.technicalSkills.frontend.length > 0 && (
-                                                <div>
-                                                    <h3 className="font-semibold mb-2">Frontend</h3>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {formData.technicalSkills.frontend.map((skill, index) => (
-                                                            <span key={index}
-                                                                className=" text-gray-700 px-3 py-1 rounded-full text-sm">
-                                                                {skill}
-                                                            </span>
-                                                        ))}
+                                        {formData.experience.map(exp => (
+                                            <div key={exp.id} className="mb-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="font-semibold">{exp.title}</h3>
+                                                        <p className="text-gray-600">{exp.company}</p>
                                                     </div>
+                                                    <p className="text-sm text-gray-500">
+                                                        {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                                                    </p>
                                                 </div>
-                                            )}
-                                            {formData.technicalSkills.backend.length > 0 && (
-                                                <div>
-                                                    <h3 className="font-semibold mb-2">Backend</h3>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {formData.technicalSkills.backend.map((skill, index) => (
-                                                            <span key={index}
-                                                                className="text-gray-700 px-3 py-1 rounded-full text-sm">
-                                                                {skill}
-                                                            </span>
-                                                        ))}
+                                                <p className="text-gray-700 mt-2">{exp.description}</p>
+                                            </div>
+                                        ))}
+                                    </section>
+                                )}
+                                {formData.education.length > 0 && (
+                                    <section className="mb-6">
+                                        <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                            Education
+                                        </h2>
+                                        {formData.education.map(edu => (
+                                            <div key={edu.id} className="mb-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="font-semibold">{edu.degree}</h3>
+                                                        <p className="text-gray-600">{edu.institution}, {edu.location}</p>
+                                                        {edu.gpa && <p className="text-gray-600 text-sm">GPA: {edu.gpa}</p>}
                                                     </div>
+                                                    <p className="text-sm text-gray-500">
+                                                        {edu.startDate} - {edu.endDate}
+                                                    </p>
                                                 </div>
-                                            )}
-                                            {formData.technicalSkills.languages.length > 0 && (
-                                                <div>
-                                                    <h3 className="font-semibold mb-2">Languages</h3>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {formData.technicalSkills.languages.map((skill, index) => (
-                                                            <span key={index}
-                                                                className="text-gray-700 px-3 py-1 rounded-full text-sm">
-                                                                {skill}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {formData.technicalSkills.tools.length > 0 && (
-                                                <div>
-                                                    <h3 className="font-semibold mb-2">Tools</h3>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {formData.technicalSkills.tools.map((skill, index) => (
-                                                            <span key={index}
-                                                                className="text-gray-700 px-3 py-1 rounded-full text-sm">
-                                                                {skill}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
+                                                {edu.description && <p className="text-gray-700 mt-2">{edu.description}</p>}
+                                            </div>
+                                        ))}
+                                    </section>
+                                )}
+
+                                {/* Soft Skills Section Preview */}
+                                {formData.softSkills.length > 0 && (
+                                    <section className="mb-6">
+                                        <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                            Kỹ năng mềm
+                                        </h2>
+                                        <div className="flex flex-wrap gap-2">
+                                            {formData.softSkills.map((skill, index) => (
+                                                <span key={index} className=" text-gray-700 px-3 py-1 rounded-full text-sm">
+                                                    {skill}
+                                                </span>
+                                            ))}
                                         </div>
                                     </section>
                                 )}
 
-                            {/* Projects Section Preview */}
-                            {formData.projects.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Dự án
-                                    </h2>
-                                    {formData.projects.map(project => (
-                                        <div key={project.id} className="mb-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="font-semibold">{project.name}</h3>
-                                                    {project.link && (
-                                                        <a href={project.link}
-                                                            className="text-blue-600 text-sm hover:underline"
-                                                            target="_blank" rel="noopener noreferrer">
-                                                            Liên kết dự án
-                                                        </a>
-                                                    )}
-                                                </div>
-                                                {(project.startDate || project.endDate) && (
-                                                    <p className="text-sm text-gray-500">
-                                                        {project.startDate && project.startDate}
-                                                        {project.startDate && project.endDate && " - "}
-                                                        {project.endDate && project.endDate}
-                                                    </p>
+                                {/* Technical Skills Section Preview */}
+                                {(formData.technicalSkills.frontend.length > 0 ||
+                                    formData.technicalSkills.backend.length > 0 ||
+                                    formData.technicalSkills.languages.length > 0 ||
+                                    formData.technicalSkills.tools.length > 0) && (
+                                        <section className="mb-6">
+                                            <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                                Technical Skills
+                                            </h2>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                {formData.technicalSkills.frontend.length > 0 && (
+                                                    <div>
+                                                        <h3 className="font-semibold mb-2">Frontend</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {formData.technicalSkills.frontend.map((skill, index) => (
+                                                                <span key={index}
+                                                                    className=" text-gray-700 px-3 py-1 rounded-full text-sm">
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {formData.technicalSkills.backend.length > 0 && (
+                                                    <div>
+                                                        <h3 className="font-semibold mb-2">Backend</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {formData.technicalSkills.backend.map((skill, index) => (
+                                                                <span key={index}
+                                                                    className="text-gray-700 px-3 py-1 rounded-full text-sm">
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {formData.technicalSkills.languages.length > 0 && (
+                                                    <div>
+                                                        <h3 className="font-semibold mb-2">Languages</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {formData.technicalSkills.languages.map((skill, index) => (
+                                                                <span key={index}
+                                                                    className="text-gray-700 px-3 py-1 rounded-full text-sm">
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {formData.technicalSkills.tools.length > 0 && (
+                                                    <div>
+                                                        <h3 className="font-semibold mb-2">Tools</h3>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {formData.technicalSkills.tools.map((skill, index) => (
+                                                                <span key={index}
+                                                                    className="text-gray-700 px-3 py-1 rounded-full text-sm">
+                                                                    {skill}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
-                                            <p className="text-gray-700 mt-2">{project.description}</p>
-                                            {project.technologies.length > 0 && (
-                                                <div className="mt-2 flex flex-wrap gap-2">
-                                                    {project.technologies.map((tech, index) => (
-                                                        <span key={index}
-                                                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                                                            {tech}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </section>
-                            )}
+                                        </section>
+                                    )}
 
-                            {/* Certificates Section Preview */}
-                            {formData.certificates.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Giấy chứng nhận
-                                    </h2>
-                                    {formData.certificates.map(cert => (
-                                        <div key={cert.id} className="mb-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="font-semibold">{cert.name}</h3>
-                                                    <p className="text-gray-600">Issued by {cert.issuer}</p>
-                                                    {cert.link && (
-                                                        <a href={cert.link}
-                                                            className="text-blue-600 text-sm hover:underline"
-                                                            target="_blank" rel="noopener noreferrer">
-                                                            Xem chứng chỉ
-                                                        </a>
+                                {/* Projects Section Preview */}
+                                {formData.projects.length > 0 && (
+                                    <section className="mb-6">
+                                        <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                            Dự án
+                                        </h2>
+                                        {formData.projects.map(project => (
+                                            <div key={project.id} className="mb-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="font-semibold">{project.name}</h3>
+                                                        {project.link && (
+                                                            <a href={project.link}
+                                                                className="text-blue-600 text-sm hover:underline"
+                                                                target="_blank" rel="noopener noreferrer">
+                                                                Liên kết dự án
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                    {(project.startDate || project.endDate) && (
+                                                        <p className="text-sm text-gray-500">
+                                                            {project.startDate && project.startDate}
+                                                            {project.startDate && project.endDate && " - "}
+                                                            {project.endDate && project.endDate}
+                                                        </p>
                                                     )}
                                                 </div>
-                                                {cert.date && <p className="text-sm text-gray-500">{cert.date}</p>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </section>
-                            )}
-
-                            {/* Extracurricular Section Preview */}
-                            {formData.extracurricular.length > 0 && (
-                                <section className="mb-6">
-                                    <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
-                                        Hoạt động ngoại khóa
-                                    </h2>
-                                    {formData.extracurricular.map(activity => (
-                                        <div key={activity.id} className="mb-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h3 className="font-semibold">{activity.activity}</h3>
-                                                    <p className="text-gray-600">
-                                                        {activity.organization} {activity.role && `- ${activity.role}`}
-                                                    </p>
-                                                </div>
-                                                {(activity.startDate || activity.endDate) && (
-                                                    <p className="text-sm text-gray-500">
-                                                        {activity.startDate && activity.startDate}
-                                                        {activity.startDate && activity.endDate && " - "}
-                                                        {activity.endDate && activity.endDate}
-                                                    </p>
+                                                <p className="text-gray-700 mt-2">{project.description}</p>
+                                                {project.technologies.length > 0 && (
+                                                    <div className="mt-2 flex flex-wrap gap-2">
+                                                        {project.technologies.map((tech, index) => (
+                                                            <span key={index}
+                                                                className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                                                {tech}
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                 )}
                                             </div>
-                                            {activity.description &&
-                                                <p className="text-gray-700 mt-2">{activity.description}</p>}
-                                        </div>
-                                    ))}
-                                </section>
-                            )}
-                            {/* Other sections will be added here */}
+                                        ))}
+                                    </section>
+                                )}
+
+                                {/* Certificates Section Preview */}
+                                {formData.certificates.length > 0 && (
+                                    <section className="mb-6">
+                                        <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                            Giấy chứng nhận
+                                        </h2>
+                                        {formData.certificates.map(cert => (
+                                            <div key={cert.id} className="mb-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="font-semibold">{cert.name}</h3>
+                                                        <p className="text-gray-600">Issued by {cert.issuer}</p>
+                                                        {cert.link && (
+                                                            <a href={cert.link}
+                                                                className="text-blue-600 text-sm hover:underline"
+                                                                target="_blank" rel="noopener noreferrer">
+                                                                Xem chứng chỉ
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                    {cert.date && <p className="text-sm text-gray-500">{cert.date}</p>}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </section>
+                                )}
+
+                                {/* Extracurricular Section Preview */}
+                                {formData.extracurricular.length > 0 && (
+                                    <section className="mb-6">
+                                        <h2 className="text-xl font-bold text-blue-900 border-b border-blue-900 pb-2 mb-4">
+                                            Hoạt động ngoại khóa
+                                        </h2>
+                                        {formData.extracurricular.map(activity => (
+                                            <div key={activity.id} className="mb-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 className="font-semibold">{activity.activity}</h3>
+                                                        <p className="text-gray-600">
+                                                            {activity.organization} {activity.role && `- ${activity.role}`}
+                                                        </p>
+                                                    </div>
+                                                    {(activity.startDate || activity.endDate) && (
+                                                        <p className="text-sm text-gray-500">
+                                                            {activity.startDate && activity.startDate}
+                                                            {activity.startDate && activity.endDate && " - "}
+                                                            {activity.endDate && activity.endDate}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                {activity.description &&
+                                                    <p className="text-gray-700 mt-2">{activity.description}</p>}
+                                            </div>
+                                        ))}
+                                    </section>
+                                )}
+                                {/* Other sections will be added here */}
+                            </div>
                         </div>
                     </div>
                 </div>

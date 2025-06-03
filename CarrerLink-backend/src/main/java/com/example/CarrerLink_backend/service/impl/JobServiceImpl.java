@@ -1,7 +1,5 @@
 package com.example.CarrerLink_backend.service.impl;
 
-
-
 import com.example.CarrerLink_backend.dto.JobDetailsDTO;
 import com.example.CarrerLink_backend.dto.TechnologyDTO;
 import com.example.CarrerLink_backend.dto.response.ApplicantDetailsgetResponseDTO;
@@ -41,8 +39,8 @@ public class JobServiceImpl implements JobService {
     private CompanyRepository companyRepository;
 
     @Override
-    public  String saveJob(JobgetResponseDTO jobgetResponseDTO, Long companyId) {
-        Job job =modelMapper.map(jobgetResponseDTO,Job.class);
+    public String saveJob(JobgetResponseDTO jobgetResponseDTO, Long companyId) {
+        Job job = modelMapper.map(jobgetResponseDTO, Job.class);
         Optional<Company> company = companyRepository.findById(companyId);
         if (company.isPresent()) {
             job.setCompany(company.get()); // Setting the company to the Job entity
@@ -50,19 +48,18 @@ public class JobServiceImpl implements JobService {
             return "Company not found";
         }
         List<Technology> techs = new ArrayList<>();
-        for(TechnologyDTO techdtos: jobgetResponseDTO.getTechnologies()){
+        for (TechnologyDTO techdtos : jobgetResponseDTO.getTechnologies()) {
             Technology technology = technologyRepo.findByTechName(techdtos.getTechName())
-                    .orElseThrow(() -> new ResourceNotFoundException("Technology with name " + techdtos.getTechName() + "Not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Technology with name " + techdtos.getTechName() + "Not found"));
             techs.add(technology);
         }
         job.setTechnologies(techs);
 
-
         jobRepo.save(job);
-        return job.getJobTitle()+"saved";
+        return job.getJobTitle() + "saved";
 
     }
-
 
     @Override
     public List<JobgetResponseDTO> getJobs(String jobType, String company) {
@@ -94,18 +91,19 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public List<JobgetResponseDTO> getJobs() {
         List<Job> jobs = jobRepo.findAll();
-        return modelMapper.map(jobs,new TypeToken<List<JobgetResponseDTO>>() {}.getType());
+        return modelMapper.map(jobs, new TypeToken<List<JobgetResponseDTO>>() {
+        }.getType());
     }
 
     @Override
     public String updateJob(JobgetResponseDTO jobgetResponseDTO) {
-        if(jobRepo.existsById(jobgetResponseDTO.getJobId())){
+        if (jobRepo.existsById(jobgetResponseDTO.getJobId())) {
 
-            Job existingJob = jobRepo.findByJobId(jobgetResponseDTO.getJobId()).orElseThrow(()->new RuntimeException("Job not found"));
+            Job existingJob = jobRepo.findByJobId(jobgetResponseDTO.getJobId())
+                    .orElseThrow(() -> new RuntimeException("Job not found"));
 
             existingJob.setJobTitle(jobgetResponseDTO.getJobTitle());
             existingJob.setJobType(jobgetResponseDTO.getJobType());
@@ -117,13 +115,14 @@ public class JobServiceImpl implements JobService {
             List<Technology> newTechs = new ArrayList<>();
             for (TechnologyDTO techDTO : jobgetResponseDTO.getTechnologies()) {
                 Technology tech = technologyRepo.findByTechName(techDTO.getTechName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Technology with name " + techDTO.getTechName() + "Not found"));
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Technology with name " + techDTO.getTechName() + "Not found"));
                 newTechs.add(tech);
             }
             existingJob.setTechnologies(newTechs);
             jobRepo.save(existingJob);
-            return existingJob.getJobTitle()+"updated";
-        }else{
+            return existingJob.getJobTitle() + "updated";
+        } else {
             throw new RuntimeException("Job not found");
         }
 
@@ -136,37 +135,35 @@ public class JobServiceImpl implements JobService {
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
         job.getTechnologies().clear(); // Xoá liên kết với Technology
-        jobRepo.save(job);             // Cập nhật DB
+        jobRepo.save(job); // Cập nhật DB
 
-        jobRepo.delete(job);           // Sau đó mới xoá job
+        jobRepo.delete(job); // Sau đó mới xoá job
 
         return "Job deleted";
     }
 
-
     @Override
     public List<JobgetResponseDTO> getAllJobByCompany(int companyId) {
         Long company = (long) companyId;
-        if(companyRepository.existsById(company)){
-            Company company1 = companyRepository.findById(company).orElseThrow(()->new RuntimeException("Company not found"));
+        if (companyRepository.existsById(company)) {
+            Company company1 = companyRepository.findById(company)
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
             List<Job> jobs = jobRepo.findByCompany(company1);
-            return modelMapper.map(jobs,new TypeToken<List<JobgetResponseDTO>>() {}.getType());
-        }
-        else{
+            return modelMapper.map(jobs, new TypeToken<List<JobgetResponseDTO>>() {
+            }.getType());
+        } else {
             throw new ResourceNotFoundException("Company is not found");
         }
 
-
     }
 
-    public String closeJob(int jobId){
+    public String closeJob(int jobId) {
         Job job = jobRepo.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         job.setStatus(JobStatus.CLOSED);
         jobRepo.save(job);
         return "Job closed";
     }
-
 
     @Override
     public List<ApplicantDetailsgetResponseDTO> getAllApplicants(@RequestParam int jobId) {
@@ -175,7 +172,7 @@ public class JobServiceImpl implements JobService {
 
         List<StudentJobs> studentJobs = studentJobsRepo.findByJob(job);
         List<ApplicantDetailsgetResponseDTO> applicantgetResponseDTOS = new ArrayList<>();
-        for(StudentJobs studentJobs1 : studentJobs){
+        for (StudentJobs studentJobs1 : studentJobs) {
             ApplicantDetailsgetResponseDTO applicantDetailsgetResponseDTO = new ApplicantDetailsgetResponseDTO();
             Student student = studentJobs1.getStudent();
             applicantDetailsgetResponseDTO.setFirstName(student.getFirstName());
@@ -184,6 +181,14 @@ public class JobServiceImpl implements JobService {
             applicantDetailsgetResponseDTO.setStatus(studentJobs1.getStatus());
             applicantDetailsgetResponseDTO.setUniversity(student.getUniversity());
             applicantDetailsgetResponseDTO.setInterviewDate(studentJobs1.getInterviewDate());
+
+            // Try to get profile image URL from both possible sources
+            if (student.getProfilePicUrl() != null) {
+                applicantDetailsgetResponseDTO.setProfileImageUrl(student.getProfilePicUrl());
+            } else if (student.getUser() != null && student.getUser().getProfileImage() != null) {
+                applicantDetailsgetResponseDTO.setProfileImageUrl(student.getUser().getProfileImage().getUrl());
+            }
+
             applicantgetResponseDTOS.add(applicantDetailsgetResponseDTO);
         }
 
@@ -207,7 +212,8 @@ public class JobServiceImpl implements JobService {
         responseDTO.setLocation(job.getLocation());
         responseDTO.setCompanyName(job.getCompany().getName());
 
-        // Convert technologies (assuming job.getTechnologies() returns a list of Technology entities)
+        // Convert technologies (assuming job.getTechnologies() returns a list of
+        // Technology entities)
         List<TechnologyDTO> techDTOs = job.getTechnologies().stream()
                 .map(tech -> new TechnologyDTO(tech.getTechId(), tech.getTechName()))
                 .collect(Collectors.toList());
@@ -215,8 +221,5 @@ public class JobServiceImpl implements JobService {
 
         return responseDTO;
     }
-
-
-
 
 }

@@ -177,7 +177,7 @@ function EditProfile() {
   if (!student) return <div>Đang tải...</div>;
 
   return (
-    <DashboardLayout StudentName={formData.firstName} profileImage={profilePicture}>
+    <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Chỉnh sửa hồ sơ</h2>
 
@@ -188,7 +188,7 @@ function EditProfile() {
               <img
                 src={profilePicture}
                 alt="Profile"
-                className="w-32 h-32 rounded-full object-cover"
+                className="w-40 h-40 rounded-full object-cover ring-4 ring-white shadow-lg border-4 border-indigo-200"
               />
               <input
                 type="file"

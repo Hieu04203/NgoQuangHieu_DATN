@@ -284,12 +284,16 @@ function CompanyDashboard() {
                     >
                       <div className="flex items-center gap-3">
                         <img
-                          src={applicant.image}
-                          alt={applicant.firstName}
-                          className="w-10 h-10 rounded-full"
+                          src={applicant.profileImageUrl || "/placeholder.svg"}
+                          alt={`${applicant.firstName} ${applicant.lastName}`}
+                          className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-lg border-2 border-indigo-200"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '/placeholder.svg';
+                          }}
                         />
                         <div>
-                          <p className="font-medium">{applicant.firstName}</p>
+                          <p className="font-medium">{`${applicant.firstName} ${applicant.lastName}`}</p>
                           <p className="text-sm text-gray-600">
                             {applicant.university}
                           </p>

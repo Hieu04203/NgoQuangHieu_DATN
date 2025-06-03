@@ -106,10 +106,7 @@ const StudentDashboard = () => {
   if (!studentInfo) return <div>Không tìm thấy ứng viên</div>;
 
   return (
-    <DashboardLayout
-      StudentName={studentInfo.firstName}
-      profileImage={studentInfo.profileImageUrl}
-    >
+    <DashboardLayout>
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Profile Info */}
@@ -119,7 +116,7 @@ const StudentDashboard = () => {
               <img
                 src={studentInfo.profileImageUrl || '/placeholder.svg'}
                 alt={`${studentInfo.firstName} ${studentInfo.lastName}`}
-                className="w-24 h-24 rounded-full mb-4 object-cover border border-gray-200"
+                className="w-32 h-32 rounded-full mb-4 object-cover ring-4 ring-white shadow-lg border-4 border-indigo-200"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = '/placeholder.svg';
