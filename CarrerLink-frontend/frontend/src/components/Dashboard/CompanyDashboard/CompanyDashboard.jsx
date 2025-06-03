@@ -32,6 +32,22 @@ import JobPostForm from "./JobPostForm";
 import JobCard from "./JobCard";
 import { getAllJobsByCompany } from "../../../api/JobDetailsApi";
 
+// Hàm format ngày giờ
+const formatDateTime = (dateTimeStr) => {
+  if (!dateTimeStr) return '';
+
+  const date = new Date(dateTimeStr);
+  if (isNaN(date.getTime())) return dateTimeStr;
+
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes} - ${day}/${month}/${year}`;
+};
+
 function CompanyDashboard() {
   const { token } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
@@ -300,7 +316,7 @@ function CompanyDashboard() {
 
                         </div>
                         <div className="flex flex-col items-center w-[280px] justify-center">
-                          <p className="font-medium">{applicant.interviewDate}</p>
+                          <p className="font-medium">{formatDateTime(applicant.interviewDate)}</p>
                           <p className="text-sm ">
                             {applicant.jobFieldName}
                           </p>
