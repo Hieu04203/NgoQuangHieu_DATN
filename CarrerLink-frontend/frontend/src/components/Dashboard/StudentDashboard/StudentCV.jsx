@@ -113,7 +113,10 @@ function App() {
         //{ id: 'references', title: 'References', icon: <FileText className="w-5 h-5" /> },
     ];
 
-
+    // Lấy năm hiện tại
+    const currentYear = new Date().getFullYear();
+    const minYear = "1950-01-01";
+    const maxYear = `${currentYear}-12-31`;
 
     useEffect(() => {
         const fetchStudent = async () => {
@@ -543,6 +546,18 @@ function App() {
         html2pdf().set(opt).from(element).save();
     };
 
+    // Hàm format ngày tháng
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`;
+    };
 
     const renderForm = () => {
         switch (activeSection) {
@@ -713,8 +728,10 @@ function App() {
                                             Ngày bắt đầu
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={exp.startDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleExperienceChange(exp.id, 'startDate', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -724,8 +741,10 @@ function App() {
                                             Ngày kết thúc
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={exp.endDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleExperienceChange(exp.id, 'endDate', e.target.value)}
                                             disabled={exp.current}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -835,8 +854,10 @@ function App() {
                                             Ngày bắt đầu
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={edu.startDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -846,8 +867,10 @@ function App() {
                                             Ngày kết thúc
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={edu.endDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -1090,8 +1113,10 @@ function App() {
                                                 Ngày bắt đầu
                                             </label>
                                             <input
-                                                type="month"
+                                                type="date"
                                                 value={project.startDate}
+                                                min={minYear}
+                                                max={maxYear}
                                                 onChange={(e) => handleProjectChange(project.id, 'startDate', e.target.value)}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
@@ -1101,8 +1126,10 @@ function App() {
                                                 Ngày kết thúc
                                             </label>
                                             <input
-                                                type="month"
+                                                type="date"
                                                 value={project.endDate}
+                                                min={minYear}
+                                                max={maxYear}
                                                 onChange={(e) => handleProjectChange(project.id, 'endDate', e.target.value)}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
@@ -1227,8 +1254,10 @@ function App() {
                                             Ngày phát hành
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={cert.date}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleCertificateChange(cert.id, 'date', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -1327,8 +1356,10 @@ function App() {
                                             Ngày bắt đầu
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={extra.startDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleExtracurricularChange(extra.id, 'startDate', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -1338,8 +1369,10 @@ function App() {
                                             Ngày kết thúc
                                         </label>
                                         <input
-                                            type="month"
+                                            type="date"
                                             value={extra.endDate}
+                                            min={minYear}
+                                            max={maxYear}
                                             onChange={(e) => handleExtracurricularChange(extra.id, 'endDate', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -1451,7 +1484,7 @@ function App() {
                                                         <p className="text-gray-600">{exp.company}</p>
                                                     </div>
                                                     <p className="text-sm text-gray-500">
-                                                        {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                                                        {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
                                                     </p>
                                                 </div>
                                                 <p className="text-gray-700 mt-2">{exp.description}</p>
@@ -1473,7 +1506,7 @@ function App() {
                                                         {edu.gpa && <p className="text-gray-600 text-sm">GPA: {edu.gpa}</p>}
                                                     </div>
                                                     <p className="text-sm text-gray-500">
-                                                        {edu.startDate} - {edu.endDate}
+                                                        {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                                                     </p>
                                                 </div>
                                                 {edu.description && <p className="text-gray-700 mt-2">{edu.description}</p>}
@@ -1585,9 +1618,7 @@ function App() {
                                                     </div>
                                                     {(project.startDate || project.endDate) && (
                                                         <p className="text-sm text-gray-500">
-                                                            {project.startDate && project.startDate}
-                                                            {project.startDate && project.endDate && " - "}
-                                                            {project.endDate && project.endDate}
+                                                            {formatDate(project.startDate)} - {project.endDate && formatDate(project.endDate)}
                                                         </p>
                                                     )}
                                                 </div>
@@ -1651,9 +1682,7 @@ function App() {
                                                     </div>
                                                     {(activity.startDate || activity.endDate) && (
                                                         <p className="text-sm text-gray-500">
-                                                            {activity.startDate && activity.startDate}
-                                                            {activity.startDate && activity.endDate && " - "}
-                                                            {activity.endDate && activity.endDate}
+                                                            {formatDate(activity.startDate)} - {activity.endDate && formatDate(activity.endDate)}
                                                         </p>
                                                     )}
                                                 </div>
