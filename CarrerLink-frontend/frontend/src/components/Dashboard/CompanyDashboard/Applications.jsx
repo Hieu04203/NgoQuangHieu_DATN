@@ -119,12 +119,12 @@ function Applications({ applicants, company }) {
         });
 
         await sendNotification(
-            studentId,
-            `CV của bạn cho ${selectedPosition} đã được chấp thuận! Cuộc phỏng vấn được lên lịch vào ${formattedDateTime}`
+          studentId,
+          `CV của bạn cho ${selectedPosition} đã được chấp thuận! Cuộc phỏng vấn được lên lịch vào ${formattedDateTime}`
         );
 
         setStudents(prev => prev.map(student =>
-            student.studentId === studentId ? { ...student, status: true } : student
+          student.studentId === studentId ? { ...student, status: true } : student
         ));
 
         Swal.fire({
@@ -148,84 +148,86 @@ function Applications({ applicants, company }) {
   if (loading) return <div>Đang tải...</div>;
 
   return (
-      <div className="space-y-8">
-        <div className="bg-white rounded-xl shadow-sm p-4 sticky top-0 z-10">
-          <h2 className="text-lg font-semibold mb-3 text-gray-800">Lĩnh vực</h2>
-          <div className="flex flex-wrap gap-2">
-            {company.jobs.map((job) => (
-                <button
-                    key={job.jobId}
-                    onClick={() => {
-                      setSelectedPosition(job.jobTitle);
-                      setJobId(job.jobId);
-                      handleApplicantsChange(job.jobId);
-                    }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        selectedPosition === job.jobTitle
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                >
-                  {job.jobTitle}
-                </button>
-            ))}
-          </div>
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl shadow-sm p-4 sticky top-0 z-10">
+        <h2 className="text-lg font-semibold mb-3 text-gray-800">Lĩnh vực</h2>
+        <div className="flex flex-wrap gap-2">
+          {company.jobs.map((job) => (
+            <button
+              key={job.jobId}
+              onClick={() => {
+                setSelectedPosition(job.jobTitle);
+                setJobId(job.jobId);
+                handleApplicantsChange(job.jobId);
+              }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedPosition === job.jobTitle
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+            >
+              {job.jobTitle}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {students.map((applicant) => (
-            <div key={applicant.studentId} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-4 w-[300px]">
-                  <img
-                      src={applicant.image || "/placeholder.svg"}
-                      alt={applicant.firstName}
-                      className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                  />
-                  <div>
-                    <h3 className="font-medium text-base">{applicant.firstName}</h3>
-                    <p className="text-sm text-gray-600">{applicant.university}</p>
-                  </div>
-                </div>
-
-                <div className="w-[120px]">
-              <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                  applicant.status ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
-              }`}>
-                {applicant.status ? "Đã phê duyệt" : "Chưa phê duyệt"}
-              </span>
-                </div>
-
-                <div className="flex items-center gap-2 w-[300px]">
-                  <input
-                      type="datetime-local"
-                      value={interviewDateTimes[applicant.studentId] || ""}
-                      min={new Date().toISOString().slice(0, 16)}
-                      onChange={(e) => handleDateTimeChange(applicant.studentId, e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
-                  />
-                  <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                </div>
-
-                <div className="flex gap-2 w-[280px] justify-end">
-                  <button
-                      onClick={() => navigate(`/student-dashboard/viewcv/${applicant.studentId}`)}
-                      className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors">
-                    Xem CV
-                  </button>
-                  <button
-                      className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors"
-                      onClick={() => handleApproveJob(applicant.studentId, jobId)}
-                  >
-                    Chấp thuận
-                  </button>
-                  <button className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 transition-colors">
-                  Từ chối
-                  </button>
-                </div>
+      {students.map((applicant) => (
+        <div key={applicant.studentId} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-4 w-[300px]">
+              <img
+                src={applicant.profileImageUrl || "/placeholder.svg"}
+                alt={`${applicant.firstName} ${applicant.lastName}`}
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-lg border-2 border-indigo-200"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder.svg';
+                }}
+              />
+              <div>
+                <h3 className="font-medium text-base">{`${applicant.firstName} ${applicant.lastName}`}</h3>
+                <p className="text-sm text-gray-600">{applicant.university}</p>
               </div>
             </div>
-        ))}
-      </div>
+
+            <div className="w-[120px]">
+              <span className={`inline-block px-3 py-1 rounded-full text-sm ${applicant.status ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
+                }`}>
+                {applicant.status ? "Đã phê duyệt" : "Chưa phê duyệt"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 w-[300px]">
+              <input
+                type="datetime-local"
+                value={interviewDateTimes[applicant.studentId] || ""}
+                min={new Date().toISOString().slice(0, 16)}
+                onChange={(e) => handleDateTimeChange(applicant.studentId, e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
+              />
+              <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            </div>
+
+            <div className="flex gap-2 w-[280px] justify-end">
+              <button
+                onClick={() => navigate(`/student-dashboard/viewcv/${applicant.studentId}`)}
+                className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors">
+                Xem CV
+              </button>
+              <button
+                className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors"
+                onClick={() => handleApproveJob(applicant.studentId, jobId)}
+              >
+                Chấp thuận
+              </button>
+              <button className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 transition-colors">
+                Từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 

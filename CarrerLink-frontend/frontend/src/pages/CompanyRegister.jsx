@@ -1,26 +1,28 @@
 import React from "react";
 import { useState } from "react";
-import { useNavigate, Link  } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import CompanyRegisterApi from "../api/CompanyRegisterApi";
+
 const CompanyRegister = () => {
-
     const [errors, setErrors] = useState({});
-    const navigate = useNavigate(); // Hook for navigation
-    const [formdata,setFormData] = useState({
-        name:'',
-        username:'',
-        email:'',
-        password:'',
-        website:'',
-        location:''
+    const navigate = useNavigate();
+    const [companyPic, setCompanyPic] = useState(null);
+    const [coverPic, setCoverPic] = useState(null);
+    const [formdata, setFormData] = useState({
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        website: '',
+        location: ''
+    });
 
-    })
-    const handleChange = (event) =>{
+    const handleChange = (event) => {
         event.preventDefault();
-        const {name,value} = event.target;
+        const { name, value } = event.target;
         setFormData((prev) => ({
             ...prev,
-            [name]:value
+            [name]: value
         }));
         if (errors[name]) {
             setErrors((prev) => ({
@@ -28,24 +30,34 @@ const CompanyRegister = () => {
                 [name]: undefined
             }));
         }
-        
-    }
+    };
 
-    const handleSubmit = async (event) =>{
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (e.target.name === 'companyPic') {
+                setCompanyPic(file);
+            } else if (e.target.name === 'coverPic') {
+                setCoverPic(file);
+            }
+        }
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(formdata);
         try {
-            const response = await CompanyRegisterApi(formdata);
+            const response = await CompanyRegisterApi(formdata, companyPic, coverPic);
             console.log('Response:', response);
-            
-            navigate("/company-auth",{
+
+            navigate("/company-auth", {
                 state: { message: "Successfully registered!" },
             });
         } catch (error) {
             console.error('Error during registration:', error);
             alert('Registration failed. Please try again.');
         }
-    }
+    };
 
     return (
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -130,11 +142,25 @@ const CompanyRegister = () => {
                             />
                         </div>
 
-                        <label className="block mb-2 font-semibold">Ảnh đại diện</label>
-                        <input
-                            type="file"
-                            className="block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-gray-300 file:text-sm file:font-semibold"
-                        />
+                        <div>
+                            <label className="block mb-2 font-semibold">Ảnh đại diện</label>
+                            <input
+                                type="file"
+                                name="companyPic"
+                                onChange={handleFileChange}
+                                className="block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-gray-300 file:text-sm file:font-semibold"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block mb-2 font-semibold">Ảnh bìa</label>
+                            <input
+                                type="file"
+                                name="coverPic"
+                                onChange={handleFileChange}
+                                className="block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-gray-300 file:text-sm file:font-semibold"
+                            />
+                        </div>
 
                         <button
                             type="submit"
@@ -145,16 +171,15 @@ const CompanyRegister = () => {
                     </form>
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
-                        Bạn đã có tài khoản?{' '}
+                            Bạn đã có tài khoản?{' '}
                             <Link to="/company-auth" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Đăng nhập
+                                Đăng nhập
                             </Link>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
-
     );
 };
 
