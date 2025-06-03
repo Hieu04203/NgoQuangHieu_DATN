@@ -93,6 +93,7 @@ function EditProfile() {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
+      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePicture(reader.result);
@@ -151,26 +152,27 @@ function EditProfile() {
     };
 
     try {
-      await UpdateStudent(studentData, imageFile); // Pass imageFile
+      const response = await UpdateStudent(studentData, imageFile);
 
-      Swal.fire({
-        title: "Đã cập nhật thành công!",
-        icon: "success",
-      });
-
-      navigate('/student'); // Navigate after success
+      if (response.success) {
+        Swal.fire({
+          title: "Đã cập nhật thành công!",
+          icon: "success",
+        });
+        navigate('/student');
+      } else {
+        throw new Error(response.error);
+      }
     } catch (error) {
       console.error('Lỗi trong quá trình cập nhật', error);
 
       Swal.fire({
         title: "Cập nhật không thành công",
-        text: error.response?.data?.message || 'Vui lòng thử lại sau.',
+        text: error.message || 'Vui lòng thử lại sau.',
         icon: "error",
       });
     }
   };
-
-
 
   if (!student) return <div>Đang tải...</div>;
 

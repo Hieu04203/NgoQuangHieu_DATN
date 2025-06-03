@@ -67,19 +67,22 @@ const StudentDashboard = () => {
         return;
       }
       try {
-        const username = extractUsernameFromToken(token);
-        if (!username) return;
+        const userId = extractUsernameFromToken(token);
+        if (!userId) {
+          console.error('Không thể lấy userId từ token');
+          return;
+        }
 
         // Fetch student data
-        const studentResponse = await getStudentByUsername(username);
+        const studentResponse = await getStudentByUsername(userId);
+        console.log('Student Response:', studentResponse);
 
-        if (isMounted) {
-          if (studentResponse?.success) {
-            setStudentInfo(studentResponse.data);
-            setSkills(studentResponse.data.skills || []);
-            setTechnologies(studentResponse.data.technologies || []);
-            setJobFields(studentResponse.data.appliedJobFields || []);
-          }
+        if (isMounted && studentResponse?.success) {
+          setStudentInfo(studentResponse.data);
+          setSkills(studentResponse.data.skills || []);
+          setTechnologies(studentResponse.data.technologies || []);
+          setJobFields(studentResponse.data.appliedJobFields || []);
+          console.log('Profile Image URL:', studentResponse.data.profileImageUrl);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -114,9 +117,13 @@ const StudentDashboard = () => {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex flex-col items-center text-center">
               <img
-                src={studentInfo.profileImageUrl}
-                alt={studentInfo.firstName}
-                className="w-24 h-24 rounded-full mb-4"
+                src={studentInfo.profileImageUrl || '/placeholder.svg'}
+                alt={`${studentInfo.firstName} ${studentInfo.lastName}`}
+                className="w-24 h-24 rounded-full mb-4 object-cover border border-gray-200"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder.svg';
+                }}
               />
               <h2 className="text-xl font-semibold">
                 {studentInfo.firstName} {studentInfo.lastName}
