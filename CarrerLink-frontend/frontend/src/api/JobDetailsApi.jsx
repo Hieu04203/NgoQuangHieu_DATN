@@ -23,61 +23,61 @@ const getAllJobsusingFilters = async (jobType, company) => {
 
 
 const getAllJobs = async () => {
-    try {
-      const response = await axiosInstance.get('jobs');
-      console.log(response)
-      if (!response.data?.success || !response.data?.data) {
-        throw new Error('Invalid API response structure');
-      }
-  
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching companies data:', {
-        status: error.response?.status,
-        message: error.response?.data?.message || error.message
-      });
-      return { success: false };
+  try {
+    const response = await axiosInstance.get('jobs');
+    console.log(response)
+    if (!response.data?.success || !response.data?.data) {
+      throw new Error('Invalid API response structure');
     }
-  };
 
-const getAllApplicants = async (jobId) =>{
-  try{
-    const response = await axiosInstance.get('jobs/get-all-applicants-for-job',{
-      params: {jobId}
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching companies data:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    return { success: false };
+  }
+};
+
+const getAllApplicants = async (jobId) => {
+  try {
+    const response = await axiosInstance.get('jobs/get-all-applicants-for-job', {
+      params: { jobId }
     });
 
-    if(!response.data?.success || !response.data?.data){
+    if (!response.data?.success || !response.data?.data) {
       throw new Error('Invalid API response structure');
     }
     return response.data;
 
   }
-  catch (error){
-    console.error('Error fetching companies data:',{
-      status:error.response?.status,
+  catch (error) {
+    console.error('Error fetching companies data:', {
+      status: error.response?.status,
       message: error.response?.data?.message || error.message
     });
-    return {success: false};
+    return { success: false };
   }
 }
 
 const getAllJobsByCompany = async (companyId) => {
-  try{
-    const response = await axiosInstance.get('jobs/get-all-jobs-by-company',{
-      params: {companyId}
+  try {
+    const response = await axiosInstance.get('jobs/get-all-jobs-by-company', {
+      params: { companyId }
     });
-    if(!response.data?.success || !response.data?.data){
+    if (!response.data?.success || !response.data?.data) {
       throw new Error('Invalid API response structure');
     }
     return response.data;
   }
-  catch (error){
-    console.error('Error fetching companies data:',{
-      status:error.response?.status,
+  catch (error) {
+    console.error('Error fetching companies data:', {
+      status: error.response?.status,
       message: error.response?.data?.message || error.message
     });
-    return {success: false};
-}
+    return { success: false };
+  }
 }
 
 const saveJob = async (jobData, companyId) => {
@@ -120,7 +120,7 @@ const updateJob = async (jobData) => {
 };
 
 const closeJob = async (jobId) => {
-  try{
+  try {
     const id = parseInt(jobId, 10);
     const response = await axiosInstance.put(`jobs/close/${id}`);
     if (!response.data?.success) {
@@ -137,5 +137,20 @@ const closeJob = async (jobId) => {
   }
 }
 
+const getJobDetails = async (jobId) => {
+  try {
+    const response = await axiosInstance.get(`jobs/detail/${jobId}`);
+    if (!response.data?.success || !response.data?.data) {
+      throw new Error('Invalid API response structure');
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching job details:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    return { success: false };
+  }
+};
 
-  export { getAllJobs, getAllJobsusingFilters, getAllApplicants,getAllJobsByCompany,saveJob,updateJob,closeJob };
+export { getAllJobs, getAllJobsusingFilters, getAllApplicants, getAllJobsByCompany, saveJob, updateJob, closeJob, getJobDetails };

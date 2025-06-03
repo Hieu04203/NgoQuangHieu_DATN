@@ -1,6 +1,5 @@
 package com.example.CarrerLink_backend.dto.response;
 
-
 import com.example.CarrerLink_backend.dto.TechnologyDTO;
 import com.example.CarrerLink_backend.entity.JobStatus;
 import lombok.AllArgsConstructor;
@@ -26,7 +25,7 @@ public class JobgetResponseDTO {
     private String location;
     private List<TechnologyDTO> technologies;
     private String companyName;
-
-
+    private Long companyId;
+    private String companyPicUrl;
 
 }

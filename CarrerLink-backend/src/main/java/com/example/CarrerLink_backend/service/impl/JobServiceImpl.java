@@ -83,8 +83,10 @@ public class JobServiceImpl implements JobService {
                 .map(job -> {
                     JobgetResponseDTO dto = modelMapper.map(job, JobgetResponseDTO.class);
 
-                    // Explicitly set company name using setter
+                    // Explicitly set company name and picture URL using setter
                     dto.setCompanyName(job.getCompany().getName());
+                    dto.setCompanyId(job.getCompany().getId());
+                    dto.setCompanyPicUrl(job.getCompany().getCompanyPicUrl());
 
                     return dto;
                 })
@@ -94,8 +96,15 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<JobgetResponseDTO> getJobs() {
         List<Job> jobs = jobRepo.findAll();
-        return modelMapper.map(jobs, new TypeToken<List<JobgetResponseDTO>>() {
-        }.getType());
+        return jobs.stream()
+                .map(job -> {
+                    JobgetResponseDTO dto = modelMapper.map(job, JobgetResponseDTO.class);
+                    dto.setCompanyName(job.getCompany().getName());
+                    dto.setCompanyId(job.getCompany().getId());
+                    dto.setCompanyPicUrl(job.getCompany().getCompanyPicUrl());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -211,6 +220,8 @@ public class JobServiceImpl implements JobService {
         responseDTO.setRate(job.getRate());
         responseDTO.setLocation(job.getLocation());
         responseDTO.setCompanyName(job.getCompany().getName());
+        responseDTO.setCompanyId(job.getCompany().getId());
+        responseDTO.setCompanyPicUrl(job.getCompany().getCompanyPicUrl());
 
         // Convert technologies (assuming job.getTechnologies() returns a list of
         // Technology entities)
