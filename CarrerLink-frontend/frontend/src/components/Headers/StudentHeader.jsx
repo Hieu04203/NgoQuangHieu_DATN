@@ -1,12 +1,18 @@
 import React, { useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { AuthContext } from '../../api/AuthProvider';
 
 function StudentHeader() {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
-    const { token } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const { token, logout } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/home');
+    };
 
     const isActive = (path) => location.pathname === path;
 
@@ -55,6 +61,15 @@ function StudentHeader() {
                             <User className="w-5 h-5 mr-2" />
                             Hồ sơ cá nhân
                         </Link>
+
+                        {/* Logout Button */}
+                        <button
+                            onClick={handleLogout}
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                        >
+                            <LogOut className="w-5 h-5 mr-2" />
+                            Đăng xuất
+                        </button>
                     </div>
 
                     {/* Mobile menu button */}
@@ -91,6 +106,17 @@ function StudentHeader() {
                             {link.label}
                         </Link>
                     ))}
+
+                    {/* Mobile Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        className="w-full text-left pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 hover:border-l-4 hover:border-gray-300"
+                    >
+                        <div className="flex items-center">
+                            <LogOut className="w-5 h-5 mr-2" />
+                            Đăng xuất
+                        </div>
+                    </button>
                 </div>
             </div>
         </nav>
