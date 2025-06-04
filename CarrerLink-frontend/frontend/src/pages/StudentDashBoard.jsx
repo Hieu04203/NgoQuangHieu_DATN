@@ -433,11 +433,11 @@ const StudentDashboard = () => {
                         </div>
                       </div>
                       <div className="flex items-start">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${job.jobType === 'FULLTIME'
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${job.jobType === 'FULLTIME' || job.jobType === 'Full-time'
                             ? 'bg-green-100 text-green-800'
                             : 'bg-blue-100 text-blue-800'
                           }`}>
-                          {job.jobType === 'FULLTIME' ? 'Full-time' : 'Part-time'}
+                          {job.jobType === 'FULLTIME' || job.jobType === 'Full-time' ? 'Full-time' : 'Part-time'}
                         </span>
                       </div>
                     </div>
