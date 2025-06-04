@@ -6,7 +6,7 @@ import {
 } from "../api/StudentDetailsApi";
 import { getAllJobs } from "../api/JobsApi";
 import { Link } from "react-router-dom";
-import { Loader2, MapPin, Building, DollarSign, Clock, Search, Filter, Briefcase, Eye, CheckCircle } from "lucide-react";
+import { Loader2, MapPin, Building, DollarSign, Clock, Search, Filter, Briefcase, Eye, CheckCircle, Check, RefreshCw } from "lucide-react";
 import SkillProgress from "../components/studentDashboard/SkillProgress";
 import TechJobCard from "../components/studentDashboard/TechJobCard";
 import SuggestedProjects from "../components/Dashboard/StudentDashboard/SuggestedProjects";
@@ -302,10 +302,9 @@ const StudentDashboard = () => {
                       value={filters.jobType}
                       onChange={(e) => setFilters(prev => ({ ...prev, jobType: e.target.value }))}
                     >
-                      <option value="all">Tất cả</option>
-                      <option value="Full-time">Toàn thời gian</option>
-                      <option value="Part-time">Bán thời gian</option>
-                      <option value="Internship">Thực tập</option>
+                      <option value="all">All</option>
+                      <option value="Full-time">Full time</option>
+                      <option value="Part-time">Part time</option>
                     </select>
                   </div>
 
@@ -317,7 +316,7 @@ const StudentDashboard = () => {
                       value={filters.salary}
                       onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
                     >
-                      <option value="all">Tất cả</option>
+                      <option value="all">All</option>
                       <option value="0-500">Dưới $500</option>
                       <option value="500-1000">$500 - $1000</option>
                       <option value="1000-2000">$1000 - $2000</option>
@@ -333,7 +332,7 @@ const StudentDashboard = () => {
                       value={filters.location}
                       onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
                     >
-                      <option value="all">Tất cả</option>
+                      <option value="all">All</option>
                       <option value="HN">Hà Nội</option>
                       <option value="HCM">Hồ Chí Minh</option>
                       <option value="DN">Đà Nẵng</option>
@@ -479,15 +478,46 @@ const StudentDashboard = () => {
 
                 {filteredJobs.length === 0 && (
                   <div className="text-center py-12">
-                    <div className="mb-4">
-                      <img
-                        src="/empty-jobs.svg"
-                        alt="Không tìm thấy việc làm"
-                        className="mx-auto w-48 h-48"
-                      />
+                    <div className="mb-6">
+                      <div className="mx-auto w-48 h-48 bg-gray-100 rounded-full flex items-center justify-center">
+                        <Search className="w-24 h-24 text-gray-300" />
+                      </div>
                     </div>
-                    <p className="text-xl font-semibold text-gray-700 mb-2">Không tìm thấy việc làm phù hợp</p>
-                    <p className="text-gray-500">Vui lòng thử lại với các bộ lọc khác</p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Không tìm thấy việc làm phù hợp
+                    </h3>
+                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                      Rất tiếc, chúng tôi không tìm thấy việc làm nào phù hợp với tiêu chí tìm kiếm của bạn.
+                      Hãy thử điều chỉnh lại các bộ lọc hoặc từ khóa tìm kiếm.
+                    </p>
+                    <div className="space-y-4">
+                      <div className="inline-flex items-center text-gray-600">
+                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
+                        <span>Thử sử dụng các từ khóa khác nhau</span>
+                      </div>
+                      <div className="inline-flex items-center text-gray-600">
+                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
+                        <span>Mở rộng phạm vi tìm kiếm về địa điểm</span>
+                      </div>
+                      <div className="inline-flex items-center text-gray-600">
+                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
+                        <span>Điều chỉnh mức lương hoặc loại công việc</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setFilters({
+                          jobType: "all",
+                          salary: "all",
+                          location: "all"
+                        });
+                      }}
+                      className="mt-8 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                    >
+                      <RefreshCw className="w-5 h-5 mr-2" />
+                      Đặt lại bộ lọc
+                    </button>
                   </div>
                 )}
               </div>
