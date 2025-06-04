@@ -302,7 +302,7 @@ const StudentDashboard = () => {
                       value={filters.jobType}
                       onChange={(e) => setFilters(prev => ({ ...prev, jobType: e.target.value }))}
                     >
-                      <option value="all">All</option>
+                      <option value="all">Tất cả</option>
                       <option value="Full-time">Full time</option>
                       <option value="Part-time">Part time</option>
                     </select>
@@ -316,7 +316,7 @@ const StudentDashboard = () => {
                       value={filters.salary}
                       onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
                     >
-                      <option value="all">All</option>
+                      <option value="all">Tất cả</option>
                       <option value="0-500">Dưới $500</option>
                       <option value="500-1000">$500 - $1000</option>
                       <option value="1000-2000">$1000 - $2000</option>
@@ -332,7 +332,7 @@ const StudentDashboard = () => {
                       value={filters.location}
                       onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
                     >
-                      <option value="all">All</option>
+                      <option value="all">Tất cả</option>
                       <option value="HN">Hà Nội</option>
                       <option value="HCM">Hồ Chí Minh</option>
                       <option value="DN">Đà Nẵng</option>
