@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { Calendar } from "lucide-react";
 import Swal from "sweetalert2";
 import { getAllApplicants, getAllJobsByCompany } from "../../../api/JobDetailsApi";
-import { ApproveJob } from "../../../api/CompanyDetailsGetApi";
+import { ApproveJob, rejectJob } from "../../../api/CompanyDetailsGetApi";
 import { AuthContext } from "../../../api/AuthProvider";
 import { useNavigate } from 'react-router-dom';
 
@@ -145,6 +145,48 @@ function Applications({ applicants, company }) {
     }
   };
 
+  const handleRejectJob = async (studentId, jobId) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Xác nhận từ chối',
+        text: 'Bạn có chắc chắn muốn từ chối ứng viên này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Từ chối',
+        cancelButtonText: 'Hủy'
+      });
+
+      if (result.isConfirmed) {
+        const response = await rejectJob(studentId, jobId);
+        if (response?.success) {
+          await sendNotification(
+            studentId,
+            `CV của bạn cho ${selectedPosition} đã bị từ chối.`
+          );
+
+          setStudents(prev => prev.filter(student => student.studentId !== studentId));
+
+          Swal.fire({
+            icon: "success",
+            title: "Đã từ chối",
+            text: "Đã từ chối ứng viên và gửi thông báo.",
+            confirmButtonColor: "#d33",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi từ chối ứng viên", error);
+      Swal.fire({
+        icon: "error",
+        title: "Từ chối không thành công",
+        text: error.message || "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
   if (loading) return <div>Đang tải...</div>;
 
   return (
@@ -220,7 +262,10 @@ function Applications({ applicants, company }) {
               >
                 Chấp thuận
               </button>
-              <button className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 transition-colors">
+              <button
+                onClick={() => handleRejectJob(applicant.studentId, jobId)}
+                className="px-4 py-2 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 transition-colors"
+              >
                 Từ chối
               </button>
             </div>

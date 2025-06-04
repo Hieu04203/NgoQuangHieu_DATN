@@ -370,4 +370,22 @@ public class CompanyServiceImpl implements CompanyService {
                 .orElseThrow(() -> new RuntimeException("Company not found for user"));
     }
 
+    @Override
+    public String rejectJob(int studentId, int jobId) {
+        Student student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        Job job = jobRepo.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        StudentJobs studentJobs = studentJobsRepo.findByStudentAndJob(student, job);
+        if (studentJobs == null) {
+            throw new RuntimeException("Application not found");
+        }
+
+        // Xóa bản ghi trong StudentJobs
+        studentJobsRepo.delete(studentJobs);
+
+        return "Application rejected successfully";
+    }
+
 }

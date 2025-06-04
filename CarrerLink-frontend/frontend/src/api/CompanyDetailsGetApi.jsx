@@ -41,24 +41,24 @@ const getCompanyByName = async (name) => {
 };
 
 const getAllCompanies = async () => {
-    try {
-      const response = await axiosInstance.get('companies');
-  
-      if (!response.data?.success || !response.data?.data) {
-        throw new Error('Invalid API response structure');
-      }
-  
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching companies data:', {
-        status: error.response?.status,
-        message: error.response?.data?.message || error.message
-      });
-      return { success: false };
-    }
-  };
+  try {
+    const response = await axiosInstance.get('companies');
 
-const ApproveJob = async (studentId,jobId,requestBody) => {
+    if (!response.data?.success || !response.data?.data) {
+      throw new Error('Invalid API response structure');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching companies data:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    return { success: false };
+  }
+};
+
+const ApproveJob = async (studentId, jobId, requestBody) => {
   console.log("Sending requestBody:", requestBody);
   try {
     const response = await axiosInstance.put('companies/approve-job', requestBody, {
@@ -96,7 +96,25 @@ const getApprovedApplicants = async (companyId) => {
     return { success: false };
   }
 };
-  
 
+const rejectJob = async (studentId, jobId) => {
+  try {
+    const response = await axiosInstance.put('companies/reject-job', null, {
+      params: { studentId, jobId }
+    });
 
-  export { getAllCompanies,getCompanyByName, getAllCompaniesusingFilters,ApproveJob,getApprovedApplicants };
+    if (!response.data?.success) {
+      throw new Error('Invalid API response structure');
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Error rejecting job application:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    throw error;
+  }
+};
+
+export { getAllCompanies, getCompanyByName, getAllCompaniesusingFilters, ApproveJob, getApprovedApplicants, rejectJob };
