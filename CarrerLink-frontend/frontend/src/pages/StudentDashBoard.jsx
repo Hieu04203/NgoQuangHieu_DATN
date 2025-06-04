@@ -245,14 +245,6 @@ const StudentDashboard = () => {
                       </h1>
                       <p className="text-blue-600 font-medium mb-4">{studentInfo.degree}</p>
                     </div>
-                    <div className="flex gap-3">
-                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        Chỉnh sửa hồ sơ
-                      </button>
-                      <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                        Xem CV
-                      </button>
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
