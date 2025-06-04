@@ -176,12 +176,21 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<ApplicantDetailsgetResponseDTO> getAllApplicants(@RequestParam int jobId) {
+        System.out.println("Getting applicants for jobId: " + jobId);
+
         Job job = jobRepo.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
 
+        System.out.println("Found job: " + job.getJobTitle());
+
         List<StudentJobs> studentJobs = studentJobsRepo.findByJob(job);
+        System.out.println("Found " + studentJobs.size() + " applications");
+
         List<ApplicantDetailsgetResponseDTO> applicantgetResponseDTOS = new ArrayList<>();
         for (StudentJobs studentJobs1 : studentJobs) {
+            System.out.println("Processing application - StudentId: " + studentJobs1.getStudent().getStudentId()
+                    + ", JobId: " + studentJobs1.getJob().getJobId());
+
             ApplicantDetailsgetResponseDTO applicantDetailsgetResponseDTO = new ApplicantDetailsgetResponseDTO();
             Student student = studentJobs1.getStudent();
             applicantDetailsgetResponseDTO.setFirstName(student.getFirstName());
@@ -201,8 +210,8 @@ public class JobServiceImpl implements JobService {
             applicantgetResponseDTOS.add(applicantDetailsgetResponseDTO);
         }
 
+        System.out.println("Returning " + applicantgetResponseDTOS.size() + " applicants");
         return applicantgetResponseDTOS;
-
     }
 
     @Override

@@ -251,23 +251,35 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public String applyJob(ApplyJobRequestDTO applyJobRequestDTO) {
-
         int studentId = applyJobRequestDTO.getStudentId();
         int jobId = applyJobRequestDTO.getJobId();
 
-        Student student = studentRepo.findByUser_Id(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        System.out.println("Applying job - Request: studentId=" + studentId + ", jobId=" + jobId);
+
+        Student student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with studentId: " + studentId));
+
+        System.out.println("Found student with studentId: " + student.getStudentId());
 
         Job job = jobRepo.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new RuntimeException("Job not found with jobId: " + jobId));
 
+        System.out.println("Found job: " + job.getJobTitle());
+
+        // Check if student already applied
         if (studentJobsRepo.existsByStudentAndJob(student, job)) {
+            System.out.println("Student " + student.getStudentId() + " already applied for " + job.getJobTitle());
             return "Student " + student.getStudentId() + " already applied for " + job.getJobTitle();
         }
+
         StudentJobs studentJobs = new StudentJobs();
         studentJobs.setStudent(student);
         studentJobs.setJob(job);
-        studentJobsRepo.save(studentJobs);
+        studentJobs.setStatus(false); // Set initial status as not approved
+        StudentJobs savedStudentJobs = studentJobsRepo.save(studentJobs);
+
+        System.out.println("Successfully saved application: studentId=" + savedStudentJobs.getStudent().getStudentId()
+                + ", jobId=" + savedStudentJobs.getJob().getJobId());
 
         return "Student with ID: " + studentId + " applied for job with ID: " + jobId;
     }
