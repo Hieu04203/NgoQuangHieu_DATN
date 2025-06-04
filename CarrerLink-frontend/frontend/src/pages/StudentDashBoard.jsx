@@ -52,6 +52,12 @@ const StudentDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [selectedJobId, setSelectedJobId] = useState(null);
+  const [filters, setFilters] = useState({
+    jobType: "all",
+    salary: "all",
+    experience: "all",
+    location: "all"
+  });
   const { token } = useContext(AuthContext);
 
   const extractUsernameFromToken = (token) => {
@@ -122,12 +128,47 @@ const StudentDashboard = () => {
   }, [token]);
 
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.location?.toLowerCase().includes(searchTerm.toLowerCase());
+    // Tìm kiếm theo tên công việc, công ty, địa điểm và mô tả
+    const searchFields = [
+      job.jobTitle?.toLowerCase(),
+      job.companyName?.toLowerCase(),
+      job.location?.toLowerCase(),
+      job.description?.toLowerCase(),
+      job.requirements?.toLowerCase()
+    ];
 
-    if (filterType === "all") return matchesSearch;
-    return matchesSearch && job.jobType === filterType;
+    const matchesSearch = searchTerm === "" || searchFields.some(field =>
+      field && field.includes(searchTerm.toLowerCase())
+    );
+
+    // Áp dụng các bộ lọc
+    const matchesJobType = filters.jobType === "all" || job.jobType === filters.jobType;
+
+    const matchesSalary = filters.salary === "all" || (() => {
+      const rate = job.rate || 0;
+      switch (filters.salary) {
+        case "0-500": return rate <= 500;
+        case "500-1000": return rate > 500 && rate <= 1000;
+        case "1000-2000": return rate > 1000 && rate <= 2000;
+        case "2000+": return rate > 2000;
+        default: return true;
+      }
+    })();
+
+    const matchesLocation = filters.location === "all" || (() => {
+      const jobLocation = job.location?.toLowerCase() || "";
+      switch (filters.location) {
+        case "HN": return jobLocation.includes("ha noi") || jobLocation.includes("hanoi") || jobLocation.includes("hà nội");
+        case "HCM": return jobLocation.includes("ho chi minh") || jobLocation.includes("hcm") || jobLocation.includes("hồ chí minh");
+        case "DN": return jobLocation.includes("da nang") || jobLocation.includes("danang") || jobLocation.includes("đà nẵng");
+        case "OTHER": return !jobLocation.includes("ha noi") && !jobLocation.includes("hanoi") && !jobLocation.includes("hà nội") &&
+          !jobLocation.includes("ho chi minh") && !jobLocation.includes("hcm") && !jobLocation.includes("hồ chí minh") &&
+          !jobLocation.includes("da nang") && !jobLocation.includes("danang") && !jobLocation.includes("đà nẵng");
+        default: return true;
+      }
+    })();
+
+    return matchesSearch && matchesJobType && matchesSalary && matchesLocation;
   });
 
   const handleJobClick = (jobId) => {
@@ -238,28 +279,119 @@ const StudentDashboard = () => {
 
             {/* Search and Filter Section */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="space-y-4">
+                {/* Search Bar */}
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm việc làm, công ty, địa điểm..."
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="Tìm kiếm theo tên công việc, công ty, địa điểm..."
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Filter className="text-gray-400 w-5 h-5" />
-                  <select
-                    className="border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                  >
-                    <option value="all">Tất cả loại công việc</option>
-                    <option value="FULLTIME">Toàn thời gian</option>
-                    <option value="PARTTIME">Bán thời gian</option>
-                  </select>
+
+                {/* Filters */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Job Type Filter */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">Loại công việc</label>
+                    <select
+                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                      value={filters.jobType}
+                      onChange={(e) => setFilters(prev => ({ ...prev, jobType: e.target.value }))}
+                    >
+                      <option value="all">Tất cả</option>
+                      <option value="Full-time">Toàn thời gian</option>
+                      <option value="Part-time">Bán thời gian</option>
+                      <option value="Internship">Thực tập</option>
+                    </select>
+                  </div>
+
+                  {/* Salary Range Filter */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">Mức lương</label>
+                    <select
+                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                      value={filters.salary}
+                      onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
+                    >
+                      <option value="all">Tất cả</option>
+                      <option value="0-500">Dưới $500</option>
+                      <option value="500-1000">$500 - $1000</option>
+                      <option value="1000-2000">$1000 - $2000</option>
+                      <option value="2000+">Trên $2000</option>
+                    </select>
+                  </div>
+
+                  {/* Location Filter */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">Địa điểm</label>
+                    <select
+                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                      value={filters.location}
+                      onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                    >
+                      <option value="all">Tất cả</option>
+                      <option value="HN">Hà Nội</option>
+                      <option value="HCM">Hồ Chí Minh</option>
+                      <option value="DN">Đà Nẵng</option>
+                      <option value="OTHER">Khác</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Active Filters */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {Object.entries(filters).map(([key, value]) => {
+                    if (value !== 'all') {
+                      let displayValue = value;
+                      // Chuyển đổi giá trị hiển thị cho dễ đọc
+                      switch (value) {
+                        case "Full-time": displayValue = "Toàn thời gian"; break;
+                        case "Part-time": displayValue = "Bán thời gian"; break;
+                        case "Internship": displayValue = "Thực tập"; break;
+                        case "HN": displayValue = "Hà Nội"; break;
+                        case "HCM": displayValue = "Hồ Chí Minh"; break;
+                        case "DN": displayValue = "Đà Nẵng"; break;
+                        case "OTHER": displayValue = "Khác"; break;
+                        case "0-500": displayValue = "Dưới $500"; break;
+                        case "500-1000": displayValue = "$500 - $1000"; break;
+                        case "1000-2000": displayValue = "$1000 - $2000"; break;
+                        case "2000+": displayValue = "Trên $2000"; break;
+                      }
+                      return (
+                        <span
+                          key={key}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-50 text-indigo-600"
+                        >
+                          {displayValue}
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, [key]: 'all' }))}
+                            className="ml-2 hover:text-indigo-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    }
+                    return null;
+                  })}
+                  {Object.values(filters).some(value => value !== 'all') && (
+                    <button
+                      onClick={() => {
+                        setFilters({
+                          jobType: "all",
+                          salary: "all",
+                          location: "all"
+                        });
+                      }}
+                      className="text-sm text-indigo-600 hover:text-indigo-800"
+                    >
+                      Xóa bộ lọc
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -305,7 +437,7 @@ const StudentDashboard = () => {
                             <p className="text-sm text-gray-600">{job.companyName}</p>
                           </div>
                           <span className={`px-3 py-1 text-sm font-medium rounded-full ${job.jobType === 'FULLTIME' ? 'bg-green-50 text-green-600' :
-                              job.jobType === 'PARTTIME' ? 'bg-blue-50 text-blue-600' : ''
+                            job.jobType === 'PARTTIME' ? 'bg-blue-50 text-blue-600' : ''
                             }`}>
                             {job.jobType === 'FULLTIME' ? 'Toàn thời gian' :
                               job.jobType === 'PARTTIME' ? 'Bán thời gian' : ''}
