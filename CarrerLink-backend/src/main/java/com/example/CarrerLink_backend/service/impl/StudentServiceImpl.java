@@ -273,7 +273,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<ApplyJobResponseDTO> getJobByStudent(@RequestParam int studentId) {
+    public List<ApplyJobResponseDTO> getJobByStudent(int studentId) {
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 

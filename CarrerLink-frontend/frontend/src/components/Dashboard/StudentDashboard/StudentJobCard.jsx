@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../../api/AuthProvider';
-import { applyForJob, getJobByStudent } from '../../../api/StudentDetailsApi';
+import { applyForJob, getJobByStudent, getStudentByUsername } from '../../../api/StudentDetailsApi';
 import JobDetailModal from './JobDetailModal';
 import Swal from 'sweetalert2';
 
@@ -13,7 +13,7 @@ function StudentJobCard({ job, className }) {
     const extractUserIdFromToken = (token) => {
         try {
             const decoded = JSON.parse(atob(token.split('.')[1]));
-            return decoded.sub;
+            return decoded.userId;
         } catch (error) {
             console.error("Token decoding failed:", error);
             return null;
@@ -34,7 +34,14 @@ function StudentJobCard({ job, className }) {
                     return;
                 }
 
-                const appliedJobs = await getJobByStudent(userId);
+                // Lấy thông tin sinh viên từ userId
+                const studentResponse = await getStudentByUsername(userId);
+                if (!studentResponse?.success) {
+                    throw new Error('Không thể lấy thông tin sinh viên');
+                }
+
+                // Sử dụng studentId để lấy danh sách công việc đã ứng tuyển
+                const appliedJobs = await getJobByStudent(studentResponse.data.studentId);
                 const hasApplied = appliedJobs.some(appliedJob => appliedJob.jobId === job.jobId);
                 setIsApplied(hasApplied);
             } catch (error) {
@@ -64,9 +71,15 @@ function StudentJobCard({ job, className }) {
             const userId = extractUserIdFromToken(token);
             if (!userId) throw new Error('Không tìm thấy ID ứng viên');
 
+            // Lấy thông tin sinh viên trước khi apply
+            const studentResponse = await getStudentByUsername(userId);
+            if (!studentResponse?.success) {
+                throw new Error('Không thể lấy thông tin sinh viên');
+            }
+
             await applyForJob({
                 jobId: job.jobId,
-                studentId: userId
+                studentId: studentResponse.data.studentId
             });
 
             setIsApplied(true);
@@ -100,10 +113,10 @@ function StudentJobCard({ job, className }) {
                 </div>
                 <span
                     className={`px-3 py-1 rounded-full text-sm ${job.status === "CLOSED"
-                            ? "bg-red-100 text-red-700"
-                            : job.status === "ACTIVE"
-                                ? "bg-green-50 text-green-700"
-                                : "bg-gray-100 text-gray-600"
+                        ? "bg-red-100 text-red-700"
+                        : job.status === "ACTIVE"
+                            ? "bg-green-50 text-green-700"
+                            : "bg-gray-100 text-gray-600"
                         }`}
                 >
                     {job.status}
@@ -140,8 +153,8 @@ function StudentJobCard({ job, className }) {
                     <button
                         onClick={handleApplyClick}
                         className={`px-4 py-2 rounded-lg transition-colors ${job.status === "CLOSED"
-                                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700"
                             }`}
                         disabled={job.status === "CLOSED"}
                     >
