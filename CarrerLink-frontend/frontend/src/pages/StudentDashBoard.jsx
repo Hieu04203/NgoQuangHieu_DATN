@@ -6,13 +6,19 @@ import {
 } from "../api/StudentDetailsApi";
 import { getAllJobs } from "../api/JobsApi";
 import { Link } from "react-router-dom";
-import { Loader2, MapPin, Building, DollarSign, Clock, Search, Filter, Briefcase, Eye, CheckCircle, Check, RefreshCw } from "lucide-react";
+import {
+  Loader2, MapPin, Building, DollarSign, Clock, Search, Filter,
+  Briefcase, Eye, CheckCircle, Check, RefreshCw, FileText,
+  GraduationCap, Mail, Phone, Calendar
+} from "lucide-react";
 import SkillProgress from "../components/studentDashboard/SkillProgress";
 import TechJobCard from "../components/studentDashboard/TechJobCard";
 import SuggestedProjects from "../components/Dashboard/StudentDashboard/SuggestedProjects";
 import JobDetailModal from "../components/Dashboard/StudentDashboard/JobDetailModal";
 import { mockProjects } from "../data/mockProjects";
 import StudentHeader from "../components/Headers/StudentHeader";
+import StudentAdvertisement from "../components/Dashboard/StudentDashboard/StudentAdvertisement";
+import StudentCompanies from "../components/Dashboard/StudentDashboard/StudentCompanies";
 
 // Fake data for dashboard statistics
 const dashboardStats = {
@@ -195,315 +201,258 @@ const StudentDashboard = () => {
   return (
     <>
       <StudentHeader />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: Profile Info */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex flex-col items-center text-center">
-                <img
-                  src={studentInfo.profileImageUrl || '/placeholder.svg'}
-                  alt={`${studentInfo.firstName} ${studentInfo.lastName}`}
-                  className="w-32 h-32 rounded-full mb-4 object-cover ring-4 ring-white shadow-lg border-4 border-indigo-100"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/placeholder.svg';
-                  }}
-                />
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {studentInfo.firstName} {studentInfo.lastName}
-                </h2>
-                <p className="text-gray-600 mb-4">{studentInfo.email}</p>
 
-                <div className="w-full border-t border-gray-100 my-4 pt-4">
-                  <div className="grid grid-cols-2 gap-6 text-sm">
-                    <div className="text-left">
-                      <p className="text-gray-500 mb-1">Trường</p>
-                      <p className="font-medium text-gray-900">{studentInfo.university}</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-gray-500 mb-1">Chuyên ngành</p>
-                      <p className="font-medium text-gray-900">{studentInfo.degree}</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-gray-500 mb-1">Khoa</p>
-                      <p className="font-medium text-gray-900">{studentInfo.department}</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-gray-500 mb-1">Địa chỉ</p>
-                      <p className="font-medium text-gray-900">{studentInfo.address}</p>
-                    </div>
-                  </div>
+      {/* Hero Section with Profile Summary */}
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-8">
+            <div className="relative">
+              <img
+                src={studentInfo.profileImageUrl || '/placeholder.svg'}
+                alt={`${studentInfo.firstName} ${studentInfo.lastName}`}
+                className="w-32 h-32 rounded-full object-cover ring-4 ring-white/50"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder.svg';
+                }}
+              />
+              <div className="absolute -bottom-2 right-0 bg-green-500 px-3 py-1 rounded-full text-xs font-medium">
+                Đang tìm việc
+              </div>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold mb-2">
+                {studentInfo.firstName} {studentInfo.lastName}
+              </h1>
+              <div className="flex items-center gap-6 text-white/90 text-sm">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  {studentInfo.email}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  {studentInfo.phone || 'Chưa cập nhật'}
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {studentInfo.address}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{dashboardStats.appliedJobs.count}</div>
+              <div className="text-sm text-gray-600">CV đã nộp</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <Eye className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{dashboardStats.viewedAds.count}</div>
+              <div className="text-sm text-gray-600">Lượt xem hồ sơ</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+            <div className="bg-purple-100 p-3 rounded-full">
+              <Briefcase className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{filteredJobs.length}</div>
+              <div className="text-sm text-gray-600">Việc làm phù hợp</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+            <div className="bg-orange-100 p-3 rounded-full">
+              <CheckCircle className="w-6 h-6 text-orange-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{dashboardStats.completedTests.count}</div>
+              <div className="text-sm text-gray-600">Bài test hoàn thành</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Profile Card */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-gray-500" />
+                  Thông tin học vấn
+                </h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="text-sm text-gray-500">Trường</label>
+                  <p className="font-medium text-gray-900">{studentInfo.university}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Chuyên ngành</label>
+                  <p className="font-medium text-gray-900">{studentInfo.degree}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Khoa</label>
+                  <p className="font-medium text-gray-900">{studentInfo.department}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">GPA</label>
+                  <p className="font-medium text-gray-900">{studentInfo.gpa || 'Chưa cập nhật'}</p>
                 </div>
               </div>
             </div>
 
-            {/* Skills Progress */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <SkillProgress student={studentInfo} />
+            {/* Skills Card */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-gray-500" />
+                  Kỹ năng
+                </h2>
+              </div>
+              <div className="p-6">
+                <SkillProgress student={studentInfo} />
+              </div>
             </div>
           </div>
 
-          {/* Right: Summary Cards + Jobs */}
+          {/* Right Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Stat Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl p-6 text-white shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">Việc làm đã ứng tuyển</h3>
-                  <Briefcase className="w-8 h-8 text-indigo-200" />
-                </div>
-                <p className="text-3xl font-bold mb-1">{dashboardStats.appliedJobs.count}</p>
-                <p className="text-indigo-100 text-sm">Đã nộp hồ sơ</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">Tin tuyển dụng đã xem</h3>
-                  <Eye className="w-8 h-8 text-purple-200" />
-                </div>
-                <p className="text-3xl font-bold mb-1">{dashboardStats.viewedAds.count}</p>
-                <p className="text-purple-100 text-sm">Tin đang hoạt động</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-6 text-white shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium">Bài kiểm tra đã làm</h3>
-                  <CheckCircle className="w-8 h-8 text-pink-200" />
-                </div>
-                <p className="text-3xl font-bold mb-1">{dashboardStats.completedTests.count}</p>
-                <p className="text-pink-100 text-sm">Bài test đã hoàn thành</p>
-              </div>
-            </div>
-
-            {/* Search and Filter Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="space-y-4">
-                {/* Search Bar */}
-                <div className="flex-1 relative">
+            {/* Search and Filters */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex flex-col space-y-4">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm theo tên công việc, công ty, địa điểm..."
+                    placeholder="Tìm kiếm việc làm..."
                     className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-
-                {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Job Type Filter */}
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">Loại công việc</label>
-                    <select
-                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                      value={filters.jobType}
-                      onChange={(e) => setFilters(prev => ({ ...prev, jobType: e.target.value }))}
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="Full-time">Full time</option>
-                      <option value="Part-time">Part time</option>
-                    </select>
-                  </div>
-
-                  {/* Salary Range Filter */}
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">Mức lương</label>
-                    <select
-                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                      value={filters.salary}
-                      onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="0-500">Dưới $500</option>
-                      <option value="500-1000">$500 - $1000</option>
-                      <option value="1000-2000">$1000 - $2000</option>
-                      <option value="2000+">Trên $2000</option>
-                    </select>
-                  </div>
-
-                  {/* Location Filter */}
-                  <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-700 mb-1">Địa điểm</label>
-                    <select
-                      className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
-                      value={filters.location}
-                      onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="HN">Hà Nội</option>
-                      <option value="HCM">Hồ Chí Minh</option>
-                      <option value="DN">Đà Nẵng</option>
-                      <option value="OTHER">Khác</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Active Filters */}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {Object.entries(filters).map(([key, value]) => {
-                    if (value !== 'all') {
-                      let displayValue = value;
-                      // Chuyển đổi giá trị hiển thị cho dễ đọc
-                      switch (value) {
-                        case "Full-time": displayValue = "Toàn thời gian"; break;
-                        case "Part-time": displayValue = "Bán thời gian"; break;
-                        case "Internship": displayValue = "Thực tập"; break;
-                        case "HN": displayValue = "Hà Nội"; break;
-                        case "HCM": displayValue = "Hồ Chí Minh"; break;
-                        case "DN": displayValue = "Đà Nẵng"; break;
-                        case "OTHER": displayValue = "Khác"; break;
-                        case "0-500": displayValue = "Dưới $500"; break;
-                        case "500-1000": displayValue = "$500 - $1000"; break;
-                        case "1000-2000": displayValue = "$1000 - $2000"; break;
-                        case "2000+": displayValue = "Trên $2000"; break;
-                      }
-                      return (
-                        <span
-                          key={key}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-50 text-indigo-600"
-                        >
-                          {displayValue}
-                          <button
-                            onClick={() => setFilters(prev => ({ ...prev, [key]: 'all' }))}
-                            className="ml-2 hover:text-indigo-800"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      );
-                    }
-                    return null;
-                  })}
-                  {Object.values(filters).some(value => value !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setFilters({
-                          jobType: "all",
-                          salary: "all",
-                          location: "all"
-                        });
-                      }}
-                      className="text-sm text-indigo-600 hover:text-indigo-800"
-                    >
-                      Xóa bộ lọc
-                    </button>
-                  )}
+                <div className="grid grid-cols-3 gap-4">
+                  <select
+                    className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={filters.jobType}
+                    onChange={(e) => setFilters(prev => ({ ...prev, jobType: e.target.value }))}
+                  >
+                    <option value="all">Tất cả hình thức</option>
+                    <option value="Full-time">Toàn thời gian</option>
+                    <option value="Part-time">Bán thời gian</option>
+                  </select>
+                  <select
+                    className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={filters.location}
+                    onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                  >
+                    <option value="all">Tất cả địa điểm</option>
+                    <option value="HN">Hà Nội</option>
+                    <option value="HCM">Hồ Chí Minh</option>
+                    <option value="DN">Đà Nẵng</option>
+                  </select>
+                  <select
+                    className="border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={filters.salary}
+                    onChange={(e) => setFilters(prev => ({ ...prev, salary: e.target.value }))}
+                  >
+                    <option value="all">Mức lương</option>
+                    <option value="0-500">Dưới $500</option>
+                    <option value="500-1000">$500 - $1000</option>
+                    <option value="1000-2000">$1000 - $2000</option>
+                    <option value="2000+">Trên $2000</option>
+                  </select>
                 </div>
               </div>
             </div>
 
-            {/* All Jobs Section */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-6 h-6 text-indigo-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Danh sách việc làm ({filteredJobs.length})
-                  </h2>
-                </div>
+            {/* Jobs List */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-6 border-b">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-gray-500" />
+                    Việc làm phù hợp
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {filteredJobs.length} việc làm
+                  </span>
+                </h2>
               </div>
-
-              <div className="grid grid-cols-1 gap-4">
+              <div className="divide-y">
                 {filteredJobs.map((job) => (
                   <div
                     key={job.jobId}
                     onClick={() => handleJobClick(job.jobId)}
-                    className="group block bg-white rounded-xl p-5 hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-100"
+                    className="p-6 hover:bg-gray-50 cursor-pointer transition-colors"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-50 to-gray-100">
-                        <div className="w-full h-full flex items-center justify-center">
-                          {job.companyName ? (
-                            <div className="text-center">
-                              <span className="text-lg font-medium text-gray-600">
-                                {job.companyName.split(' ').map(word => word[0]).join('')}
-                              </span>
-                            </div>
-                          ) : (
-                            <Building className="w-8 h-8 text-gray-400" />
-                          )}
-                        </div>
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        {job.companyPicUrl ? (
+                          <img
+                            src={job.companyPicUrl}
+                            alt={job.companyName}
+                            className="w-12 h-12 object-contain"
+                          />
+                        ) : (
+                          <Building className="w-8 h-8 text-gray-400" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                              {job.jobTitle}
-                            </h3>
-                            <p className="text-sm text-gray-600">{job.companyName}</p>
-                          </div>
-                          <span className={`px-3 py-1 text-sm font-medium rounded-full ${job.jobType === 'FULLTIME' ? 'bg-green-50 text-green-600' :
-                            job.jobType === 'PARTTIME' ? 'bg-blue-50 text-blue-600' : ''
-                            }`}>
-                            {job.jobType === 'FULLTIME' ? 'Toàn thời gian' :
-                              job.jobType === 'PARTTIME' ? 'Bán thời gian' : ''}
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {job.jobTitle}
+                        </h3>
+                        <p className="text-gray-600 mb-2">{job.companyName}</p>
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            {job.location}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="w-4 h-4" />
+                            {job.rate || 'Thương lượng'}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {job.jobType === 'FULLTIME' ? 'Toàn thời gian' : 'Bán thời gian'}
                           </span>
                         </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-500 mb-3">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            <span className="truncate">{job.location || 'Chưa cập nhật địa điểm'}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="w-4 h-4" />
-                            <span className="truncate">{job.rate || 'Thương lượng'}</span>
-                          </div>
-                        </div>
-
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{job.description || 'Chưa có mô tả'}</p>
-
-                        <div className="flex flex-wrap gap-2">
-                          {job.technologies?.slice(0, 3).map((tech, index) => (
-                            <span
-                              key={index}
-                              className="px-2.5 py-1 text-xs font-medium bg-gray-50 text-gray-600 rounded-lg border border-gray-100"
-                            >
-                              {tech.techName}
-                            </span>
-                          ))}
-                          {job.technologies?.length > 3 && (
-                            <span className="px-2.5 py-1 text-xs font-medium bg-gray-50 text-gray-600 rounded-lg border border-gray-100">
-                              +{job.technologies.length - 3}
-                            </span>
-                          )}
-                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${job.jobType === 'FULLTIME'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-blue-100 text-blue-800'
+                          }`}>
+                          {job.jobType === 'FULLTIME' ? 'Full-time' : 'Part-time'}
+                        </span>
                       </div>
                     </div>
                   </div>
                 ))}
 
                 {filteredJobs.length === 0 && (
-                  <div className="text-center py-12">
-                    <div className="mb-6">
-                      <div className="mx-auto w-48 h-48 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Search className="w-24 h-24 text-gray-300" />
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <div className="p-8 text-center">
+                    <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       Không tìm thấy việc làm phù hợp
                     </h3>
-                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                      Rất tiếc, chúng tôi không tìm thấy việc làm nào phù hợp với tiêu chí tìm kiếm của bạn.
-                      Hãy thử điều chỉnh lại các bộ lọc hoặc từ khóa tìm kiếm.
+                    <p className="text-gray-500 mb-4">
+                      Hãy thử điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm của bạn
                     </p>
-                    <div className="space-y-4">
-                      <div className="inline-flex items-center text-gray-600">
-                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
-                        <span>Thử sử dụng các từ khóa khác nhau</span>
-                      </div>
-                      <div className="inline-flex items-center text-gray-600">
-                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
-                        <span>Mở rộng phạm vi tìm kiếm về địa điểm</span>
-                      </div>
-                      <div className="inline-flex items-center text-gray-600">
-                        <Check className="w-5 h-5 text-indigo-500 mr-2" />
-                        <span>Điều chỉnh mức lương hoặc loại công việc</span>
-                      </div>
-                    </div>
                     <button
                       onClick={() => {
                         setSearchTerm("");
@@ -513,9 +462,9 @@ const StudentDashboard = () => {
                           location: "all"
                         });
                       }}
-                      className="mt-8 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+                      className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center justify-center gap-2"
                     >
-                      <RefreshCw className="w-5 h-5 mr-2" />
+                      <RefreshCw className="w-4 h-4" />
                       Đặt lại bộ lọc
                     </button>
                   </div>
@@ -524,14 +473,24 @@ const StudentDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Companies Section */}
+        <div className="mt-12">
+          <StudentCompanies />
+        </div>
+
+        {/* Advertisement Section */}
+        <div className="mt-12">
+          <StudentAdvertisement />
+        </div>
       </div>
+
+      {/* Job Detail Modal */}
       {selectedJobId && (
         <JobDetailModal
           jobId={selectedJobId}
-          onClose={() => {
-            console.log('Closing modal');
-            setSelectedJobId(null);
-          }}
+          onClose={() => setSelectedJobId(null)}
+          studentId={studentInfo.id}
         />
       )}
     </>
