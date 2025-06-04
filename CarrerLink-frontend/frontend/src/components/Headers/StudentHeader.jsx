@@ -18,7 +18,7 @@ function StudentHeader() {
 
     const navLinks = [
         { path: '/student', label: 'Home' },
-        { path: '/student-dashboard/jobs', label: 'Công việc' },
+        { path: '/student-dashboard/jobs', label: 'Công việc được đề xuất' },
         { path: '/testplatform', label: 'TEST' },
         { path: '/student-dashboard/cv', label: 'CV' },
     ];
