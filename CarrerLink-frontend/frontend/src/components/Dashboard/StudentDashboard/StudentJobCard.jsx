@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../../api/AuthProvider';
-import { applyForJob, getAppliedJobs } from '../../../api/StudentDetailsApi';
+import { applyForJob, getJobByStudent } from '../../../api/StudentDetailsApi';
 import JobDetailModal from './JobDetailModal';
 import Swal from 'sweetalert2';
 
@@ -13,7 +13,7 @@ function StudentJobCard({ job, className }) {
     const extractUserIdFromToken = (token) => {
         try {
             const decoded = JSON.parse(atob(token.split('.')[1]));
-            return decoded.userId;
+            return decoded.sub;
         } catch (error) {
             console.error("Token decoding failed:", error);
             return null;
@@ -34,7 +34,7 @@ function StudentJobCard({ job, className }) {
                     return;
                 }
 
-                const appliedJobs = await getAppliedJobs(userId);
+                const appliedJobs = await getJobByStudent(userId);
                 const hasApplied = appliedJobs.some(appliedJob => appliedJob.jobId === job.jobId);
                 setIsApplied(hasApplied);
             } catch (error) {
@@ -100,10 +100,10 @@ function StudentJobCard({ job, className }) {
                 </div>
                 <span
                     className={`px-3 py-1 rounded-full text-sm ${job.status === "CLOSED"
-                        ? "bg-red-100 text-red-700"
-                        : job.status === "ACTIVE"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-gray-100 text-gray-600"
+                            ? "bg-red-100 text-red-700"
+                            : job.status === "ACTIVE"
+                                ? "bg-green-50 text-green-700"
+                                : "bg-gray-100 text-gray-600"
                         }`}
                 >
                     {job.status}
@@ -127,7 +127,7 @@ function StudentJobCard({ job, className }) {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Đang kiểm tra...
+                        Đang xử lý...
                     </div>
                 ) : isApplied ? (
                     <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg flex items-center">
@@ -140,8 +140,8 @@ function StudentJobCard({ job, className }) {
                     <button
                         onClick={handleApplyClick}
                         className={`px-4 py-2 rounded-lg transition-colors ${job.status === "CLOSED"
-                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                            : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700"
                             }`}
                         disabled={job.status === "CLOSED"}
                     >

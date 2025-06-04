@@ -181,6 +181,25 @@ const approveStudent = async (studentId) => {
   }
 };
 
+const getJobByStudent = async (studentId) => {
+  try {
+    const response = await axiosInstance.get(`/students/get-job-by-student?studentId=${studentId}`);
+    console.log('Applied jobs response:', response.data);
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || "Failed to fetch applied jobs");
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching applied jobs:", {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message
+    });
+    return [];
+  }
+};
+
 export {
   getStudentByUsername,
   getJobRecommendations,
@@ -190,5 +209,6 @@ export {
   SaveCV,
   getCV,
   getAllStudents,
-  approveStudent
+  approveStudent,
+  getJobByStudent
 };
