@@ -55,7 +55,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final TechnologyRepo technologyRepo;
     private final CompanyImageRepository companyImageRepository;
     private final ClientRepo clientRepo;
-    private static final String ACTION_1 = " not found. ";
+    private static final String ACTION_1 = " does not exist.";
     private final StudentJobsRepo studentJobsRepo;
     private final JobRepo jobRepo;
     private final StudentRepo studentRepo;
@@ -63,6 +63,12 @@ public class CompanyServiceImpl implements CompanyService {
     private final FileServiceImpl fileService;
     private final EmailService emailService;
     private final Cloudinary cloudinary;
+    private final CVRepo cvRepo;
+    private final CountBroadcastService broadcastService;
+    private final ProjectsRepository projectsRepo;
+    private final ExperienceRepository experienceRepo;
+    private final EducationRepository educationRepo;
+    private final CertificationRepository certificationRepo;
 
     // private ApplicationEventPublisher eventPublisher;
     // private SimpMessagingTemplate messagingTemplate;
@@ -382,7 +388,22 @@ public class CompanyServiceImpl implements CompanyService {
             throw new RuntimeException("Application not found");
         }
 
-        // Xóa bản ghi trong StudentJobs
+        // Send rejection email to the candidate
+        String emailBody = String.format(
+                "Xin chào %s,\n\nChúng tôi rất tiếc phải thông báo rằng hồ sơ ứng tuyển của bạn cho vị trí '%s' tại %s đã không được chấp thuận.\n\nChúng tôi đánh giá cao sự quan tâm của bạn đến công ty và chúc bạn thành công trong con đường sự nghiệp.\n\nTrân trọng,\nĐội ngũ %s",
+                student.getFirstName(),
+                job.getJobTitle(),
+                job.getCompany().getName(),
+                job.getCompany().getName());
+
+        try {
+            emailService.sendEmail(student.getEmail(), "Thông báo kết quả ứng tuyển - " + job.getJobTitle(), emailBody);
+        } catch (Exception e) {
+            // Log the error but continue with the rejection process
+            System.err.println("Failed to send rejection email: " + e.getMessage());
+        }
+
+        // Delete the application record
         studentJobsRepo.delete(studentJobs);
 
         return "Application rejected successfully";
