@@ -388,6 +388,11 @@ public class CompanyServiceImpl implements CompanyService {
             throw new RuntimeException("Application not found");
         }
 
+        // Kiểm tra nếu đơn đã được chấp nhận và lên lịch phỏng vấn
+        if (studentJobs.getStatus() != null && studentJobs.getStatus() && studentJobs.getInterviewDate() != null) {
+            throw new RuntimeException("Không thể từ chối đơn ứng tuyển đã được chấp nhận và lên lịch phỏng vấn");
+        }
+
         // Send rejection email to the candidate
         String emailBody = String.format(
                 "Xin chào %s,\n\nChúng tôi rất tiếc phải thông báo rằng hồ sơ ứng tuyển của bạn cho vị trí '%s' tại %s đã không được chấp thuận.\n\nChúng tôi đánh giá cao sự quan tâm của bạn đến công ty và chúc bạn thành công trong con đường sự nghiệp.\n\nTrân trọng,\nĐội ngũ %s",
