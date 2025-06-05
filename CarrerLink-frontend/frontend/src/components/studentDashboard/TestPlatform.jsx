@@ -113,7 +113,7 @@ const TestPlatform = () => {
       });
       setResults({
         score: response.data.score,
-        total: response.data.totalMarks,
+        totalMarks: response.data.totalMarks,
         answers: response.data.answers
       });
       setEnrolledTestResults(prev => ({
@@ -143,7 +143,7 @@ const TestPlatform = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTimeout(() => {
-        setResults({ score, total: takingTest.totalMarks, answers });
+        setResults({ score, totalMarks: takingTest.totalMarks, answers });
         setEnrolledTestResults(prev => ({
           ...prev,
           [takingTest.testId]: { score, totalMarks: takingTest.totalMarks, answers }
