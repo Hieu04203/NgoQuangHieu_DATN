@@ -65,6 +65,8 @@ const StudentDashboard = () => {
     location: "all"
   });
   const { token } = useContext(AuthContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 5;
 
   const extractUsernameFromToken = (token) => {
     try {
@@ -185,6 +187,16 @@ const StudentDashboard = () => {
 
     return matchesSearch && matchesJobType && matchesSalary && matchesLocation;
   });
+
+  // Calculate pagination
+  const indexOfLastJob = currentPage * jobsPerPage;
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleJobClick = (jobId) => {
     console.log('Opening job details for ID:', jobId);
@@ -386,94 +398,151 @@ const StudentDashboard = () => {
               </div>
 
               {/* Jobs List */}
-              <div className="bg-white rounded-lg shadow-sm">
-                <div className="p-4 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <Briefcase className="w-5 h-5 text-blue-600" />
-                      Việc làm phù hợp
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                      <Briefcase className="w-5 h-5 text-gray-500" />
+                      Công việc phù hợp
                     </h2>
-                    <span className="text-sm text-gray-500">
-                      {filteredJobs.length} việc làm
-                    </span>
                   </div>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {filteredJobs.map((job) => (
-                    <div
-                      key={job.jobId}
-                      onClick={() => handleJobClick(job.jobId)}
-                      className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
-                    >
-                      <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-100">
-                          {job.companyPicUrl ? (
-                            <img
-                              src={job.companyPicUrl}
-                              alt={job.companyName}
-                              className="w-12 h-12 object-contain"
-                            />
-                          ) : (
-                            <Building className="w-8 h-8 text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-blue-600">
-                            {job.jobTitle}
-                          </h3>
-                          <p className="text-gray-600 mb-2">{job.companyName}</p>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
-                              {job.location}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <DollarSign className="w-4 h-4" />
-                              {job.rate || 'Thương lượng'}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {job.jobType === 'FULLTIME' ? 'Toàn thời gian' : 'Bán thời gian'}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${job.jobType === 'FULLTIME' || job.jobType === 'Full-time'
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'bg-green-50 text-green-700'
-                            }`}>
-                            {job.jobType === 'FULLTIME' || job.jobType === 'Full-time' ? 'Full-time' : 'Part-time'}
-                          </span>
-                        </div>
+
+                  <div className="space-y-4">
+                    {/* Search Bar */}
+                    <div className="flex gap-4 mb-6">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Tìm kiếm công việc..."
+                          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                       </div>
                     </div>
-                  ))}
 
-                  {filteredJobs.length === 0 && (
-                    <div className="p-8 text-center">
-                      <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Không tìm thấy việc làm phù hợp
-                      </h3>
-                      <p className="text-gray-500 mb-4">
-                        Hãy thử điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm của bạn
-                      </p>
-                      <button
-                        onClick={() => {
-                          setSearchTerm("");
-                          setFilters({
-                            jobType: "all",
-                            salary: "all",
-                            location: "all"
-                          });
-                        }}
-                        className="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-2"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                        Đặt lại bộ lọc
-                      </button>
+                    {/* Job Cards */}
+                    <div className="divide-y divide-gray-100">
+                      {currentJobs.map((job) => (
+                        <div
+                          key={job.jobId}
+                          onClick={() => handleJobClick(job.jobId)}
+                          className="p-4 hover:bg-blue-50 cursor-pointer transition-colors"
+                        >
+                          <div className="flex gap-4">
+                            <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-100">
+                              {job.companyPicUrl ? (
+                                <img
+                                  src={job.companyPicUrl}
+                                  alt={job.companyName}
+                                  className="w-12 h-12 object-contain"
+                                />
+                              ) : (
+                                <Building className="w-8 h-8 text-gray-400" />
+                              )}
+                            </div>
+
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                {job.jobTitle}
+                              </h3>
+                              <p className="text-blue-600 font-medium mb-2">
+                                {job.companyName}
+                              </p>
+                              <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-4 h-4" />
+                                  {job.location}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  {job.jobType}
+                                </span>
+                                {job.rate && (
+                                  <span className="flex items-center gap-1">
+                                    <DollarSign className="w-4 h-4" />
+                                    {job.rate}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div>
+                              <Eye className="w-5 h-5 text-gray-400" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Pagination */}
+                      {totalPages > 1 && (
+                        <div className="flex justify-center items-center space-x-2 py-4 border-t">
+                          <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`px-3 py-1 rounded-md ${currentPage === 1
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border'
+                              }`}
+                          >
+                            Trước
+                          </button>
+
+                          {[...Array(totalPages)].map((_, index) => (
+                            <button
+                              key={index + 1}
+                              onClick={() => handlePageChange(index + 1)}
+                              className={`px-3 py-1 rounded-md ${currentPage === index + 1
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-white text-gray-700 hover:bg-gray-50 border'
+                                }`}
+                            >
+                              {index + 1}
+                            </button>
+                          ))}
+
+                          <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`px-3 py-1 rounded-md ${currentPage === totalPages
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border'
+                              }`}
+                          >
+                            Sau
+                          </button>
+                        </div>
+                      )}
+
+                      {/* No Jobs Found Message */}
+                      {filteredJobs.length === 0 && (
+                        <div className="p-8 text-center">
+                          <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            Không tìm thấy việc làm phù hợp
+                          </h3>
+                          <p className="text-gray-500 mb-4">
+                            Hãy thử điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm của bạn
+                          </p>
+                          <button
+                            onClick={() => {
+                              setSearchTerm("");
+                              setFilters({
+                                jobType: "all",
+                                salary: "all",
+                                location: "all"
+                              });
+                            }}
+                            className="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-2"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                            Đặt lại bộ lọc
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
