@@ -162,7 +162,7 @@ const TestManager = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    await axios.delete(`${API_URL}/${id}`, {
+                    await axios.delete(`${API_URL}/delete-question/${id}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setTests(tests.filter(test => test.testId !== id));

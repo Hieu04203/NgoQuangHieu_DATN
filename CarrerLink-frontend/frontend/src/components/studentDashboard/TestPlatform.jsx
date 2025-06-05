@@ -247,7 +247,7 @@ const TestPlatform = () => {
                       }}
                       className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition-colors duration-300"
                     >
-                      {enrolledTestResults[test.testId] ? 'Xem kết quả' : 'Làm lại bài TEST'}
+                      {enrolledTestResults[test.testId] ? 'Xem kết quả' : 'Bắt đầu làm bài'}
                     </button>
                   </div>
                 </div>
@@ -271,7 +271,7 @@ const TestPlatform = () => {
                     results && enrolledTests.includes(selectedTest.testId) ? (
                       <div className="space-y-8">
                         <h5 className="text-2xl font-bold text-gray-800">Kết quả kiểm tra</h5>
-                        <p className="text-lg text-gray-700"><strong>Điểm của bạn:</strong> {results.score} / {results.total}</p>
+                        <p className="text-lg text-gray-700"><strong>Điểm của bạn:</strong> {results.score} / {results.totalMarks}</p>
                         <h6 className="text-xl font-semibold text-gray-800 mt-6">Câu trả lời đúng</h6>
                         <ul className="space-y-8">
                           {selectedTest.questions.map((q, index) => (
