@@ -317,7 +317,7 @@ const TestPlatform = () => {
                   ) : results ? (
                     <div className="space-y-8">
                       <h5 className="text-2xl font-bold text-gray-800">Kết quả kiểm tra</h5>
-                      <p className="text-lg text-gray-700"><strong>Điểm của bạn:</strong> {results.score} / {results.total}</p>
+                      <p className="text-lg text-gray-700"><strong>Điểm của bạn:</strong> {results.score} / {results.totalMarks}</p>
                       <h6 className="text-xl font-semibold text-gray-800 mt-6">Câu trả lời đúng</h6>
                       <ul className="space-y-8">
                         {takingTest.questions.map((q, index) => (
